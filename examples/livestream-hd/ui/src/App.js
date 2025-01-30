@@ -12,22 +12,29 @@ class App extends React.Component {
 
   // MQTT broker connection details, this is used to communicate
   // Between this application and the Agent.
-  mqttURI = 'wss://mqtt.xxx.xx:8443/mqtt';
-  mqttUsername = '';
-  mqttPassword = '';
+  mqttURI = process.env.REACT_APP_MQTT_URI;
+  mqttUsername = process.env.REACT_APP_MQTT_USERNAME;
+  mqttPassword = process.env.REACT_APP_MQTT_PASSWORD;
 
   // To communicate with the Agents, we need to use the hubPublicKey and hubPrivateKey.
   // The public key is used to target the desired agents within a Hub subscription.
   // The private key is used to encrypt and decrypt the data secu
-  hubPublicKey = 'xxx';
-  hubPrivateKey = 'xxx';
+  hubPublicKey = process.env.REACT_APP_HUB_PUBLIC_KEY;
+  hubPrivateKey = process.env.REACT_APP_HUB_PRIVATE_KEY;
 
   // List of agents (cameras) to display, we'll use the Agent id
   // to get the stream of the desired cameras.
   agents = [
-    'local-agent',
-    //'my-agent',
-    //'my-agent2',
+    'camera1',
+    'camera2',
+    'camera3',
+    'camera4',
+    'camera5',
+    'camera6',
+    'camera7',
+    'camera8',
+    'camera9',
+    // ... and more
   ]
 
   constructor() {
@@ -67,10 +74,10 @@ class App extends React.Component {
       {/* Wait for MQTT connection before rendering streams */}
       <div className="grid justify-items-stretch grid-cols-3 gap-0 bg-white pt-4 pb-4">
       { this.state.connected && this.agents.map((agent) => {
-        return <div className="relative flex items-center bg-black text-white" key={agent}>
+        return <div className="relative flex items-center justify-center bg-black text-white" key={agent}>
           <Stream name={agent} 
                   mqtt={this.mqtt}/>
-          <div className="absolute top-0 right-0 bg-black text-white p-2">{agent}</div>
+          <div className="absolute top-0 left-0 bg-black text-white p-2">{agent}</div>
         </div>
       })}
       </div>
