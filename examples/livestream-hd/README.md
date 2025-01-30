@@ -30,52 +30,60 @@ The WebRTC flow is initiated, and starts with the initial step: the `offer` crea
 
 Once the `offer` is successfully created, it's encrypted using the `Hub private key` and send over the Agent through MQTT.
 
-# 3. Request for stream: Your application will reach out to MQTT message broker (e.g. Vernemq or Mosquitto) by requesting a HD session. This topic includes the `hubKey`, indicating the Hub user account to which the camera belongs.
+## 3. Create and send answer
 
-    - Publish to `kerberos/agent/{hubKey}` topic, this is what the agent is listening to.
-    - The payload of the message is of following format, and send to previously mentioned `topic`.
-    - The agent will receive the payload on the expected `hubKey` and validates the `device_id` to verify the message receiver.
-    - Once validated the agent, will validate the action `request-hd-stream` and execute the desired function (where in this scenario it will share an WebRTC answer).
+The `offer` is received by the Agent, in a response the Agent will generate an `answer`, which is similar to the `offer`; it includes media codec information and more.
 
-             const payload = {
-                 mid: "xxxx",
-                 timestamp: "xxxx",
-                 device_id: this.deviceKey,
-                 hidden: false,
-                 payload: {
-                     action: "request-hd-stream",
-                     device_id: this.deviceKey,
-                     value: {
-                         timestamp: Math.floor(Date.now() / 1000),
-                         session_id: this.cuuid,
-                         session_description: btoa(this.pc.localDescription.sdp),
-                     }
-                 }
-             };
+The whole idea about `offer` and `answer` is just like sharing phone numbers when you meet someone for the first time. You'll find the corresponding code in the [`kerberos-io\agent` repository](https://github.com/kerberos-io/agent/blob/master/machinery/src/webrtc/main.go#L210-L215)
 
-3.  Once the agent receives the request for HD streaming it will generate a WebRTC answer sent to the following topic `kerberos/hub/{hubKey}`, with a similar payload as previously mentioned but with a different `action` and `value`.
+    answer, err := peerConnection.CreateAnswer(nil)
+    if err != nil {
+        log.Log.Error("webrtc.main.InitializeWebRTCConnection(): something went wrong while creating answer: " + err.Error())
+    } else if err = peerConnection.SetLocalDescription(answer); err != nil {
+        log.Log.Error("webrtc.main.InitializeWebRTCConnection(): something went wrong while setting local description: " + err.Error())
+    }
 
-    - Following payload will be send to `kerberos/hub/{hubKey}`.
+## 4. Share ICE candidates
 
-           const payload = {
-               mid: "xxxx",
-               timestamp: "xxxx",
-               device_id: this.deviceKey,
-               hidden: false,
-               payload: {
-                   action: "receive-sd-stream",
-                   device_id: this.deviceKey,
-                   value: {
-                       image: "/3223535--base64-encode-string....--ewgewg/"
-                   }
-               }
-           };
+Once the `offer` and `answer` are shared both peers (Agent and client) will start gathering one or more ICE candidates. An ICE candidate contains specific information about communication channels or routes.
 
-    - The payload of the consumed messages will include a base64 encoded image, which can be visualised through embedding in a `<img>` HTML component.
+Each ICE candidate is shared with the other peer (Agent -> client | client -> Agent). By doing so each peer will know how to communicate with each other. Once all ICE candidates are shared a candidate keypair is chosen for setting up the final communication; this decision is made by the WebRTC protocol.
 
-. In this case sharing the available and possible routes to transfer the stream between the agent and hub (also called ICE candidates).
+    handleICECandidateEvent(event) {
+        if (event.candidate) {
+            // Handle ICE candidate event
+            const { candidate } = event.candidate;
+            const payload = {
+                action: "receive-hd-candidates",
+                device_id: this.name,
+                value: {
+                    timestamp: Math.floor(Date.now() / 1000),
+                    session_id: this.sessionId,
+                    candidate: candidate,
+                }
+            };
+            this.mqtt.publish(payload);
+        }
+    }
 
-4.  Close stream: your application stops sending "keep-alive" request for stream (1), the targetted agent will stop sending JPEGs to the relative MQTT topic (2), for which the live view is closed.
+## 5. Forwarding streaming
+
+The Agent will start forwarding the RTP track to the client, using the chosen ICE candidate pair. The client will mount the RTP track to a `<video>` HTML component.
+
+    handleTrackEvent(event) {
+        const videoElement = this.videoRef.current;
+        if (videoElement) {
+            videoElement.srcObject = event.streams[0];
+        }
+    }
+
+The `<video>` HTML component is rendered in the browser and visualises the RTP stream accordingly.
+
+    render(){
+        return (
+            <video style={{width: "100%"}} ref={this.videoRef} muted controls></video>
+        );
+    }
 
 ## Example
 
