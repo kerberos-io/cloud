@@ -16,8 +16,8 @@ class WebRTC extends React.Component {
 
         this.peerConnection = new RTCPeerConnection({
             iceServers: [
-                { urls: process.env.REACT_APP_STUN_URI },
-                { urls: process.env.REACT_APP_TURN_URI, username: process.env.REACT_APP_WEBRTC_USERNAME, credential: process.env.REACT_APP_WEBRTC_PASSWORD }
+                { urls: window.env.STUN_URI },
+                { urls: window.env.TURN_URI, username: window.env.WEBRTC_USERNAME, credential: window.env.WEBRTC_PASSWORD }
             ]
         });
 

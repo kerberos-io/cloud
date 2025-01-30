@@ -12,15 +12,15 @@ class App extends React.Component {
 
   // MQTT broker connection details, this is used to communicate
   // Between this application and the Agent.
-  mqttURI = process.env.REACT_APP_MQTT_URI;
-  mqttUsername = process.env.REACT_APP_MQTT_USERNAME;
-  mqttPassword = process.env.REACT_APP_MQTT_PASSWORD;
+  mqttURI = window.env.MQTT_URI;
+  mqttUsername = window.env.MQTT_USERNAME;
+  mqttPassword = window.env.MQTT_PASSWORD;
 
   // To communicate with the Agents, we need to use the hubPublicKey and hubPrivateKey.
   // The public key is used to target the desired agents within a Hub subscription.
   // The private key is used to encrypt and decrypt the data secu
-  hubPublicKey = process.env.REACT_APP_HUB_PUBLIC_KEY;
-  hubPrivateKey = process.env.REACT_APP_HUB_PRIVATE_KEY;
+  hubPublicKey = window.env.HUB_PUBLIC_KEY;
+  hubPrivateKey = window.env.HUB_PRIVATE_KEY;
 
   // List of agents (cameras) to display, we'll use the Agent id
   // to get the stream of the desired cameras.
