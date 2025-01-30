@@ -1,18 +1,36 @@
-# High definition live streaming
+# High definition (WebRTC) live streaming
 
 Hub provides two types of live view: a low resolution live view and a high resolution (on demand) live view. Depending on the application you might leverage one over the other, or, both. Below we will explain the differences, and how to open and negotiate a high resolution live view with the Agent using the concepts of WebRTC. It's important to understand that live view is an on-demand action, which requires a negotiation between the requesting client (Hub or this example application) and the remote Agent. This negotiation will setup a sessions between the client and the Agent, for a short amount of time. Once the client closes the connection, the Agent will also stop forwarding the live view.
 
-## High resolution
+## Architecture
 
 Hub and Agent provides a high resolution live view, which includes a full frames per second (FPS) stream. To enable this functionality, the WebRTC protocol is used for negotiating the channels (ICE candidates) and forwarding the RTP packets. We will describe the communication flow in detail below.
 
 ![Livestreaming HD](./livestream-hd.svg)
 
-The negotiation of a live view is a multi-step approach, we'll detail each step below.
+The negotiation of a WebRTC stream is a multi-step approach, we'll detail each step below. If you need more background about WebRTC, we advise to read through the [WebRTC for the curious book](https://github.com/webrtc-for-the-curious/webrtc-for-the-curious).
 
-1.  Setup connection: before moving on your app should be able to communicate and authenticate with MQTT message broker, using the relevant credentials of your MQTT broker.
+## 1. Play WebRTC
 
-2.  Request for stream: Your application will reach out to MQTT message broker (e.g. Vernemq or Mosquitto) by requesting a HD session. This topic includes the `hubKey`, indicating the Hub user account to which the camera belongs.
+An user opens the application, and either activates the WebRTC stream or the application automatically loads the WebRTC stream without any user interaction (for example video wall behaviour).
+
+## 2. Create and send offer
+
+The WebRTC flow is initiated, and starts with the initial step: the `offer` creation. This so called `offer` includes all the necessary information about the client application (codecs and much more), which the receiving peer (our Agent) needs to know to successfully setup a real-time connection in the next steps. If you want more information about the technicalities of the `offer`, we advise the go through WebRTC for the curious book.
+
+    return this.peerConnection.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true,
+        iceRestart: true,
+    }).then(offer => {
+        return this.peerConnection.setLocalDescription(offer);
+    }).then(() => {
+        this.sendOffer();
+    }).catch(error => console.log(error));
+
+Once the `offer` is successfully created, it's encrypted using the `Hub private key` and send over the Agent through MQTT.
+
+# 3. Request for stream: Your application will reach out to MQTT message broker (e.g. Vernemq or Mosquitto) by requesting a HD session. This topic includes the `hubKey`, indicating the Hub user account to which the camera belongs.
 
     - Publish to `kerberos/agent/{hubKey}` topic, this is what the agent is listening to.
     - The payload of the message is of following format, and send to previously mentioned `topic`.
