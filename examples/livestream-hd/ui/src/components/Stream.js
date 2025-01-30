@@ -9,14 +9,22 @@ class Stream extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            streamMode: this.streamModeOptions[1],
+            streamMode: props.globalSteamMode || this.streamModeOptions[1],
         };
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.globalStreamMode !== this.props.globalStreamMode) {
+            this.setState({ streamMode: this.props.globalStreamMode });
+        }
+    }
+
     toggleStream = () => {
-        this.setState((prevState) => ({
-            streamMode: prevState.streamMode === this.streamModeOptions[0] ? this.streamModeOptions[1] : this.streamModeOptions[0]
-        }));
+        this.setState(prevState => {
+            const currentIndex = this.streamModeOptions.indexOf(prevState.streamMode);
+            const nextIndex = (currentIndex + 1) % this.streamModeOptions.length;
+            return { streamMode: this.streamModeOptions[nextIndex] };
+        });
     };
 
 
@@ -28,12 +36,12 @@ class Stream extends React.Component {
         const selectedStyle = `${baseStyle} bg-gray-800 text-white`;
 
         return (
-            <div>
+            <div className="w-full">
                 <button className="absolute top-2 right-2 text-gray-800 bg-gray-400 bg-opacity-70 rounded-full flex items-center overflow-hidden justify-center text-xs z-50"
                     onClick={this.toggleStream}>
-                <span className={(streamMode === this.streamModeOptions[0]) ? selectedStyle : baseStyle}>SD</span>
-                <span className={(streamMode === this.streamModeOptions[1]) ? selectedStyle : baseStyle}>HD</span>
-                    </button>
+                    <span className={(streamMode === this.streamModeOptions[0]) ? selectedStyle : baseStyle}>SD</span>
+                    <span className={(streamMode === this.streamModeOptions[1]) ? selectedStyle : baseStyle}>HD</span>
+                </button>
                 {streamMode=== this.streamModeOptions[0] ? <JPEG name={name} mqtt={mqtt}></JPEG> : <WebRTC name={name} mqtt={mqtt}></WebRTC>}
             </div>
         );
