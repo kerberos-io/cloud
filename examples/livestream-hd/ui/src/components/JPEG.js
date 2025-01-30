@@ -16,7 +16,7 @@ class JPEG extends React.Component {
 
         // To start receiving messages, we need to send heartbeats to the topic: kerberos/agent/{hubKey}
         // This will wakeup the desired agents, and they will start sending JPEGS to the kerberos/hub/{hubKey} topic.
-        setInterval(() => {
+        this.intervalId = setInterval(() => {
            this.publish();
         }, 3000);
 
@@ -25,6 +25,11 @@ class JPEG extends React.Component {
         // JPEGS to the kerberos/hub/{hubKey} topic.
         this.subscribe();
     }
+
+    componentWillUnmount() {
+        clearInterval(this.intervalId);
+    }
+
 
     subscribe() {
         // We're listening for the "receive-sd-stream" action for the specific

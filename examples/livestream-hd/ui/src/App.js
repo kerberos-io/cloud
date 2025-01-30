@@ -85,13 +85,13 @@ class App extends React.Component {
     return <div id="page-root">
     <Main>
       <Gradient />
-      <div className='flex justify-between items-center'>
+      <div className='flex justify-between items-center bg-black'>
         {this.state.isConnecting && <div className='bg-orange-500 text-orange-50 p-2 w-fit'>Connecting to MQTT.</div>}
         {this.state.error && <div className='bg-red-500 text-red-50 p-2 w-fit'>Error connecting to MQTT.</div>}
-        {this.state.connected && <div className='bg-green-500 text-green-50 p-2 w-fit'>Connected to MQTT!</div>}
+        {this.state.connected && <div className='bg-green-500 text-green-50 p-2 w-fit rounded-full'>Connected to MQTT!</div>}
 
         <div className='flex justify-center items-center gap-2'>
-          <div className="flex items-center gap-2 shadow-md px-2 py-2">
+          <div className="flex items-center gap-2 text-white shadow-md px-2 py-2">
             <span>All</span>
             <button className="text-gray-800 bg-gray-400 bg-opacity-70 rounded-full flex items-center overflow-hidden justify-center text-xs z-50"
                 onClick={this.toggleStreams}>
@@ -103,7 +103,7 @@ class App extends React.Component {
       </div>
 
       {/* Wait for MQTT connection before rendering streams */}
-      <div className="grid justify-items-stretch grid-cols-3 gap-0 bg-white pb-4">
+      <div className="grid justify-items-stretch grid-cols-3 gap-0 bg-white pb-4 h-full">
       { this.state.connected && this.agents.map((agent) => {
         return <div className="relative w-full flex items-center justify-center bg-black text-white" key={agent}>
                   <Stream name={agent} 
