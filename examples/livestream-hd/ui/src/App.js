@@ -25,7 +25,6 @@ class App extends React.Component {
   // List of agents (cameras) to display, we'll use the Agent id
   // to get the stream of the desired cameras.
   agents = [
-    'camera1',
     'camera2',
     'camera3',
     'camera4',
@@ -34,6 +33,7 @@ class App extends React.Component {
     'camera7',
     'camera8',
     'camera9',
+    'camera1',
     // ... and more
   ]
 
@@ -104,8 +104,8 @@ class App extends React.Component {
 
       {/* Wait for MQTT connection before rendering streams */}
       <div className="grid justify-items-stretch grid-cols-3 gap-0 bg-white pb-4 h-full">
-      { this.state.connected && this.agents.map((agent) => {
-        return <div className="relative w-full flex items-center justify-center bg-black text-white" key={agent}>
+      { this.state.connected && this.agents.map((agent, index) => {
+        return <div className="relative w-full flex items-center justify-center bg-black text-white" key={agent + index}>
                   <Stream name={agent} 
                           mqtt={this.mqtt}
                           globalStreamMode={globalStreamMode}/>

@@ -14,6 +14,7 @@ export default class MQTT {
     this.mqttURI = mqttURI;
     this.mqttUsername = mqttUsername;
     this.mqttPassword = mqttPassword;
+
   }
 
   on(deviceId, callback) {
@@ -88,6 +89,8 @@ export default class MQTT {
       username: this.mqttUsername,
       password: this.mqttPassword
     });
+
+    this.client.setMaxListeners(30);
     // Try to connect to the MQTT broker, and subscribe to the relevant topics.
     callback(this.client.connected);
     this.client.on('connect', () => {
