@@ -25,7 +25,7 @@ Kerberos Hub is the single pane of glass for your Kerberos Agents. It comes with
 
 ## License
 
-To use Kerberos Hub a license is required. This license will grant access the Kerberos Hub API, and allow to connect a number of cameras and Kerberos Vaults. Request a license at `support@kerberos.io`.
+To use Hub a license is required. This license will grant access the Hub API, and allow to connect a number of cameras and Vaults. Request a license at `support@kerberos.io`.
 
 ## Installation
 
