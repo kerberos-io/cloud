@@ -137,7 +137,7 @@ class WebRTC extends React.Component {
 
     render(){
         return (
-            <video style={{width: "100%"}} ref={this.videoRef} muted controls></video>
+            <video style={{width: "100%"}} ref={this.videoRef} muted></video>
         );
     }
 }

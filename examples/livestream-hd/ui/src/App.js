@@ -6,8 +6,8 @@ import {
   Main,
   Gradient,
 } from '@kerberos-io/ui';
+import { STREAM_MODE_OPTIONS } from './constants/constants';
 ;
-
 class App extends React.Component {
 
   // MQTT broker connection details, this is used to communicate
@@ -37,25 +37,18 @@ class App extends React.Component {
     // ... and more
   ]
 
-  streamModeOptions = ["jpeg", "webrtc"];
-
-
   constructor() {
     super();
     this.state = {
       isConnecting: true,
       connected: false,
       error: false,
-      globalStreamMode: this.streamModeOptions[1],
+      globalStreamMode: STREAM_MODE_OPTIONS.WEBRTC,
     };
   }
 
-  toggleStreams = () => {
-    this.setState(prevState => {
-        const currentIndex = this.streamModeOptions.indexOf(prevState.globalStreamMode);
-        const nextIndex = (currentIndex + 1) % this.streamModeOptions.length;
-        return { globalStreamMode: this.streamModeOptions[nextIndex] };
-    });
+  changeGlobalStreamMode = (streamMode) => {
+    this.setState({ globalStreamMode: streamMode });
   };
 
 
@@ -78,26 +71,25 @@ class App extends React.Component {
 
   render() {
 
-    const baseStyle = "px-2 py-1 overflow-hidden";
+    const baseStyle = "flex justify-center items-centerd p-3 h-full";
     const selectedStyle = `${baseStyle} bg-gray-800 text-white`;
     const { globalStreamMode } = this.state;
 
     return <div id="page-root">
     <Main>
       <Gradient />
-      <div className='flex justify-between items-center bg-black'>
+      <div className='flex justify-between items-center h-10 bg-black'>
         {this.state.isConnecting && <div className='bg-orange-500 text-orange-50 p-2 w-fit'>Connecting to MQTT.</div>}
         {this.state.error && <div className='bg-red-500 text-red-50 p-2 w-fit'>Error connecting to MQTT.</div>}
-        {this.state.connected && <div className='bg-green-500 text-green-50 p-2 w-fit rounded-full'>Connected to MQTT!</div>}
+        {this.state.connected && <div className='bg-green-500 text-green-50 p-2 w-fit'>Connected to MQTT!</div>}
 
-        <div className='flex justify-center items-center gap-2'>
-          <div className="flex items-center gap-2 text-white shadow-md px-2 py-2">
+        <div className='flex justify-center items-center gap-2 h-full'>
+          <div className="flex items-center gap-2 text-white h-full shadow-md">
             <span>All</span>
-            <button className="text-gray-800 bg-gray-400 bg-opacity-70 rounded-full flex items-center overflow-hidden justify-center text-xs z-50"
-                onClick={this.toggleStreams}>
-                <span className={(globalStreamMode === this.streamModeOptions[0]) ? selectedStyle : baseStyle}>SD</span>
-                <span className={(globalStreamMode === this.streamModeOptions[1]) ? selectedStyle : baseStyle}>HD</span>
-            </button>
+            <div className="text-gray-800 bg-gray-400 bg-opacity-70 flex items-center overflow-hidden justify-center h-full text-xs z-50">
+                <button className={(globalStreamMode === STREAM_MODE_OPTIONS.JPEG) ? selectedStyle : baseStyle} onClick={() => this.changeGlobalStreamMode(STREAM_MODE_OPTIONS.JPEG)}>SD</button>
+                <button className={(globalStreamMode === STREAM_MODE_OPTIONS.WEBRTC) ? selectedStyle : baseStyle} onClick={() => this.changeGlobalStreamMode(STREAM_MODE_OPTIONS.WEBRTC)}>HD</button>
+            </div>
           </div>
         </div>
       </div>
@@ -105,7 +97,7 @@ class App extends React.Component {
       {/* Wait for MQTT connection before rendering streams */}
       <div className="grid justify-items-stretch grid-cols-3 gap-0 bg-white pb-4 h-full">
       { this.state.connected && this.agents.map((agent, index) => {
-        return <div className="relative w-full flex items-center justify-center bg-black text-white" key={agent + index}>
+        return <div className="relative group w-full flex items-center justify-center bg-black text-white" key={agent + index}>
                   <Stream name={agent} 
                           mqtt={this.mqtt}
                           globalStreamMode={globalStreamMode}/>
