@@ -83,7 +83,7 @@ If you already have the CRDs install you could get rid of `--set installCRDs=tru
 Next we will install a cluster issuer that will make the HTTP01 challenges, this is needed for resolving the certificates of both Kerberos Hub web interface and api.
 
     kubectl apply -f cert-manager/cluster-issuer.yaml
-    
+
 ## Message broker or queue
 
 To integrate, scale and make Kerberos Hub more resilient the Kerberos Hub pipeline is using a message broker (or queue) to provide a resilient message flow. The message broker integrates the different micro services you'll find in Kerberos Hub, and allow you to scale specific services independently. As of now we suppor two main messages brokers: RabbitMQ and Kafka. Depending on your current solution landscape and/or skills you might prefer one over the other.
@@ -153,9 +153,9 @@ Within Kerberos Hub data is stored/required for users, recordings, sites, groups
 
 ### MongoDB
 
-A MongoDB instance is used for data persistence. Data might come from the Kerberos Pipeline or user interaction on the Kerberos Hub frontend. You can consider to use managed MongoDB (through [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or a cloud provider like AWS, GCP or azure) or you can use the self-hosted deployment as mentioned below. 
+A MongoDB instance is used for data persistence. Data might come from the Kerberos Pipeline or user interaction on the Kerberos Hub frontend. You can consider to use managed MongoDB (through [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or a cloud provider like AWS, GCP or azure) or you can use the self-hosted deployment as mentioned below.
 
-For the self-hosted deployment we will be using [the official bitnami mongodb helm chart](https://github.com/bitnami/charts/tree/main/bitnami/mongodb). Please navigate to there [repository](https://github.com/bitnami/charts/tree/main/bitnami/mongodb) for more configuration options. 
+For the self-hosted deployment we will be using [the official bitnami mongodb helm chart](https://github.com/bitnami/charts/tree/main/bitnami/mongodb). Please navigate to there [repository](https://github.com/bitnami/charts/tree/main/bitnami/mongodb) for more configuration options.
 
 We will create a namespace for our MongoDB deployment as well.
 
@@ -218,11 +218,3 @@ Upgrade the Kerberos Hub chart
 Uninstall the Kerberos Hub chart
 
     helm uninstall hub -n kerberos-hub
-
-## Kerberos Hub Object Detector
-
-[The Hub Object Detector](https://github.com/kerberos-io/hub-objecttracker) shows how to levarage machine learning into Kerberos Hub. By deploying this workload in a GPU enabled Kubernetes cluster (or standalone container) you can predict and track objects in your video feeds captured by your Kerberos Agents and stored in Kerberos Vault.
-
-![Hub Object Detector](./assets/images/hub-objectdetector.png)
-
-[The object detector for Kerberos Hub](https://github.com/kerberos-io/hub-objecttracker) is showing how you connect to a message broker (RabbitMQ, Kafka or others) and how you can consume and download recordings from Kerberos Vault. In the [Kerberos Vault example directory](https://github.com/kerberos-io/vault/tree/master/examples) we are showing a concrete example of how to do this.
