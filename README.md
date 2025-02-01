@@ -4,22 +4,22 @@ Hub is the single pane of glass for your Agents. It comes with a best-of-breed o
 
 ![hub-dashboard](assets/images/hub-dashboard.gif)
 
-The Hub offers an extensive set of features that enable you to scale and manage a comprehensive video surveillance landscape:
+Hub offers an extensive set of features that enable you to scale and manage a comprehensive video surveillance landscape:
 
-- Camera governance with groups and sites
-- On-demand livestreaming in hig definition
-- Recording overview per day.
-- Real-time notifications through the configuration of alerts.
-- Video analytics through various machine learning models
-- and many more.
+- Organize cameras with groups and sites for better governance.
+- High-definition on-demand livestreaming.
+- Daily recording overviews.
+- Real-time notifications with configurable alerts.
+- Advanced video analytics using machine learning models.
+- And many more features.
 
 ## :books: Overview
 
 ### Introduction
 
 1. [License](#license)
-2. [What's in the repo?](#whats-in-the-repo)
-3. [What are we building?](#what-are-we-building)
+2. [Building blocks and components](#building-blocks-and-components)
+3. [Architecture](#architecture)
 
 ### Installation
 
@@ -46,7 +46,7 @@ A license key specifies the number of Agents and cameras you can connect to the 
 
 [A free license](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml#L10-L11) is included with the existing deployment, allowing you to connect up to 8 Agents to Hub. If you need to connect more than 8 Agents, please contact us to request an extended license.
 
-## Installation
+## Building blocks and components
 
 Hub is composed of and relies on several open-source components to ensure scalability and high availability. The key components include:
 
@@ -59,7 +59,7 @@ Above components are a prerequisite for a complete Hub installation. If one of t
 
 Once all components are in place you can complete the installation by configuring and installing the Hub through our [helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub) into your Kubernetes cluster.
 
-# What are we building?
+## Architecture
 
 As shown below you will find the architecture of what we are going to install (the green rectangle).
 
