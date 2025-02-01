@@ -63,7 +63,7 @@ Once all components are in place you can complete the installation by configurin
 
 As shown below you will find the architecture of what we are going to install (the green rectangle).
 
-![hub-architecture](assets/images/hub-deployment.png)
+![hub-architecture](assets/images/hub-overview.svg)
 
 # Prerequisites
 
