@@ -33,7 +33,7 @@ Hub has several dependencies, as described below. Different components need to b
 
 ## What's in the repo?
 
-This repo describes how to install Kerberos Hub inside your own Kubernetes cluster (or [K3S cluster](https://k3s.io/)) using a Helm chart.
+This repo describes how to install Hub inside your own Kubernetes cluster (or [K3S cluster](https://k3s.io/)) using a Helm chart.
 
 A couple of dependencies need to be installed first:
 
@@ -175,7 +175,7 @@ Within Kerberos Hub we allow streaming live from the edge to the cloud without p
 
 ![hub-architecture](assets/images/hub-stunturn.png)
 
-To run a TURN/STUN we recommend installing coturn on a dedicated/stand-alone machine. The TURN/STUN server will make sure a connection from a Kerberos Agent to a Kerberos Hub viewer is established. More information on how to install coturn and configure it on a Ubuntu machine can be [found here](https://www.linuxbabe.com/linux-server/install-coturn-turn-server-spreed-webrtc).
+To run a TURN/STUN we recommend installing coturn on a dedicated/stand-alone machine. The TURN/STUN server will make sure a connection from a Agent to a Hub viewer is established. More information on how to install coturn and configure it on a Ubuntu machine can be [found here](https://www.linuxbabe.com/linux-server/install-coturn-turn-server-spreed-webrtc).
 
     sudo apt install coturn
     systemctl status coturn
