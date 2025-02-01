@@ -25,9 +25,7 @@ Hub is the single pane of glass for your Agents. It comes with a best-of-breed o
 
 ## License
 
-To start using Hub, you'll require a license. This license will grant access to the Hub and allow you to connect a specific number of Agents and Vaults.
-
-Hub can be installed without a license key, allowing you to verify the installation before entering into a license agreement. This ensures you are confident in your deployment.
+To start using Hub, you'll require a license. This license will grant access to the Hub and allow you to connect a specific number of Agents and Vaults. Hub can be installed without a license key, allowing you to verify the installation before entering into a license agreement. This ensures you are confident in your deployment.
 
 The license key ensures business continuity in the event of license expiration. Once the license expires, the system will continue to work (no data loss); however, you will be prompted on the login page that your license has expired, and you will no longer be able to sign in.
 
