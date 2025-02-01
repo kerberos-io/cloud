@@ -25,11 +25,26 @@ Hub is the single pane of glass for your Agents. It comes with a best-of-breed o
 
 ## License
 
-To start using Hub, you'll require a license. This license will grant access to the Hub API and allow you to connect a number of Agents and Vaults. Request a license at `support@kerberos.io`.
+To start using Hub, you'll require a license. This license will grant access to the Hub and allow you to connect a specific number of Agents and Vaults.
+
+Hub can be installed without a license key, allowing you to verify the installation before entering into a license agreement. This ensures you are confident in your deployment.
+
+The license key ensures business continuity in the event of license expiration. Once the license expires, the system will continue to work (no data loss); however, you will be prompted on the login page that your license has expired, and you will no longer be able to sign in.
+
+> To request a license you can reach out to `support@kerberos.io`.
 
 ## Installation
 
-Hub has several dependencies, as described below. Different components need to be installed and are leveraged by Hub to store data (MongoDB), bi-directional communication (MQTT/Vernemq), etc. Each of these services is installed through the concept of Helm charts. Once all dependencies are installed, you will see that Kerberos Hub itself is [also installed through the Kerberos Hub helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub).
+Hub is composed of and relies on several open-source components to ensure scalability and high availability. The key components include:
+
+- **MongoDB**: storage of meta data about Agents, recordings, notifications and more.
+- **MQTT broker**: Facilitates bi-directional communication between Agents and Hub.
+- **AMQP broker**: Handles asynchronous event processing within the Hub.
+- **TURN/STUN server**: High definition (WebRTC) livestreaming
+
+Above components are a prerequisite for a complete Hub installation. If one of the above components is missing, for example, a TURN/STUN server, it will mean that the live streaming feature will not be working.
+
+Once all components are in place you can complete the installation by configuring and installing the Hub through our [helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub).
 
 ## What's in the repo?
 
