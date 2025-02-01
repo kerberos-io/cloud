@@ -1,14 +1,25 @@
-# Kerberos Hub (hub-0.54.3)
+# Hub
 
-Kerberos Hub is the single pane of glass for your Kerberos Agents. It comes with a best of breed open source technology stack, modular and scale first mindset, and allows you to build and maintain an everless growing video surveillance and video analytics landscape.
+Hub is the single pane of glass for your Agents. It comes with a best-of-breed open-source technology stack, a modular and scale-first mindset, and allows you to build and maintain an ever-growing video surveillance and video analytics landscape. With Hub, you can seamlessly integrate various components, ensuring a robust and scalable solution for all your video monitoring needs. Whether you are managing a few cameras or a large-scale deployment, Hub provides the tools and flexibility to adapt and grow with your requirements.
+
+![hub-dashboard](assets/images/hub-dashboard.gif)
+
+Hub offers an extensive set of features that enable you to scale and manage a comprehensive video surveillance landscape:
+
+- Organize cameras with groups and sites for better governance.
+- High-definition on-demand livestreaming.
+- Daily recording overviews.
+- Real-time notifications with configurable alerts.
+- Advanced video analytics using machine learning models.
+- And many more features.
 
 ## :books: Overview
 
 ### Introduction
 
 1. [License](#license)
-2. [What's in the repo?](#whats-in-the-repo)
-3. [What are we building?](#what-are-we-building)
+2. [Building blocks and components](#building-blocks-and-components)
+3. [Architecture](#architecture)
 
 ### Installation
 
@@ -25,30 +36,30 @@ Kerberos Hub is the single pane of glass for your Kerberos Agents. It comes with
 
 ## License
 
-To use Hub a license is required. This license will grant access the Hub API, and allow to connect a number of cameras and Vaults. Request a license at `support@kerberos.io`.
+> To request a license you can reach out to `support@kerberos.io`.
 
-## Installation
+To start using Hub, you'll require a license. This license will grant access to the Hub and allow you to connect a specific number of Agents and Vaults. Hub can be installed without a license key, allowing you to verify the installation before entering into a license agreement. This ensures you are confident in your deployment.
 
-The Kerberos Hub service has several dependencies, as described below. Different components needs to be installed and are leveraged by Kerberos Hub to store data (MongoDB), bi-directional communication (MQTT/Vernemq), etc. Each of these services are installed through the concept of Helm charts. Once all dependencies are installed you will see that Kerberos Hub itself is [also installed through the Kerberos Hub helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub).
+The license key ensures business continuity in the event of license expiration. Once the license expires, the system will continue to work (no data loss); however, you will be prompted on the login page that your license has expired, and you will no longer be able to sign in.
 
-## What's in the repo?
+A license key specifies the number of Agents and cameras you can connect to the Hub, as well as the duration of the license period. If the number of Agents exceeds the licensed amount, Hub will continue to operate, but you will receive a notification prompting you to upgrade your license.
 
-This repo describes how to install Kerberos Hub inside your own Kubernetes cluster (or [K3S cluster](https://k3s.io/)) using a Helm chart.
+[A free license](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml#L10-L11) is included with the existing deployment, allowing you to connect up to 8 Agents to Hub. If you need to connect more than 8 Agents, please contact us to request an extended license.
 
-A couple of dependencies need to be installed first:
+## Building blocks and components
 
-- A message broker ([RabbitMQ](https://www.rabbitmq.com/), [Kafka](https://kafka.apache.org/) or others)
-- an event broker ([Vernemq](https://vernemq.com/))
-- a database ([MongoDB](https://www.mongodb.com/)),
-- and a TURN server ([Pion](https://github.com/pion/turn))
+Hub is composed of and relies on several open-source components to ensure scalability and high availability. The key components include:
 
-Next to that one can use an Nginx ingress controller (or Traefik) for orchestrating the ingresses, however this is all up to you. Once all dependencies are installed, the appropriate values [should be updated in the Kerberos Hub `values.yaml`](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml) file.
+- **MongoDB**: storage of meta data about Agents, recordings, notifications and more.
+- **MQTT broker**: Facilitates bi-directional communication between Agents and Hub.
+- **AMQP broker**: Handles asynchronous event processing within the Hub.
+- **TURN/STUN server**: High definition (WebRTC) livestreaming
 
-We do manage certificates through cert-manager and letsencrypt, and rely on HTTP01 and DNS01 resolvers. So you might need to change that for your custom scenarion (e.g. on premise deployment).
+Above components are a prerequisite for a complete Hub installation. If one of the above components is missing, for example, a TURN/STUN server, it will mean that the live streaming feature will not be working.
 
-![hub-dashboard](assets/images/hub-dashboard.gif)
+Once all components are in place you can complete the installation by configuring and installing the Hub through our [helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub) into your Kubernetes cluster.
 
-# What are we building?
+## Architecture
 
 As shown below you will find the architecture of what we are going to install (the green rectangle).
 
@@ -175,7 +186,7 @@ Within Kerberos Hub we allow streaming live from the edge to the cloud without p
 
 ![hub-architecture](assets/images/hub-stunturn.png)
 
-To run a TURN/STUN we recommend installing coturn on a dedicated/stand-alone machine. The TURN/STUN server will make sure a connection from a Kerberos Agent to a Kerberos Hub viewer is established. More information on how to install coturn and configure it on a Ubuntu machine can be [found here](https://www.linuxbabe.com/linux-server/install-coturn-turn-server-spreed-webrtc).
+To run a TURN/STUN we recommend installing coturn on a dedicated/stand-alone machine. The TURN/STUN server will make sure a connection from a Agent to a Hub viewer is established. More information on how to install coturn and configure it on a Ubuntu machine can be [found here](https://www.linuxbabe.com/linux-server/install-coturn-turn-server-spreed-webrtc).
 
     sudo apt install coturn
     systemctl status coturn
@@ -201,20 +212,20 @@ On AKS add following attribute, otherwise nginx will not be accessible through `
 
     --set controller.service.externalTrafficPolicy=Local
 
-# Kerberos Hub
+# Hub
 
-So once you hit this step, you should have installed a previous defined dependencies. Hopefully you didn't have too much pain with the certificates. Go to [the Kerberos Hub helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub) when installing for the first time, there you'll find all the relevant information for configuring and creating.
+So once you hit this step, you should have installed all previous defined dependencies. Go to [the Hub helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub), there you'll find all the relevant information for configuring and creating an instance of Hub.
 
-If you already know what to do, grab the latest `values.yaml` at the [Kerberos Hub Helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml), and reference it from your `helm install` or `helm upgrade` command.
+If you already know what to do, grab the latest `values.yaml` at the [Hub Helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml), and reference it from your `helm install` or `helm upgrade` command.
 
-Install the Kerberos Hub chart in a specific namespace and take into the values.yaml file.
+Install the Hub chart in a specific namespace and take into the values.yaml file.
 
     helm install hub kerberos/hub --values values.yaml -n kerberos-hub --create-namespace
 
-Upgrade the Kerberos Hub chart
+Upgrade the Hub chart
 
     helm upgrade hub kerberos/hub --values values.yaml -n kerberos-hub
 
-Uninstall the Kerberos Hub chart
+Uninstall the Hub chart
 
     helm uninstall hub -n kerberos-hub
