@@ -33,6 +33,8 @@ The license key ensures business continuity in the event of license expiration. 
 
 A license key specifies the number of Agents and cameras you can connect to the Hub, as well as the duration of the license period. If the number of Agents exceeds the licensed amount, Hub will continue to operate, but you will receive a notification prompting you to upgrade your license.
 
+[A free license](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml#L10-L11) is included with the existing deployment, allowing you to connect up to 8 Agents to Hub. If you need to connect more than 8 Agents, please contact us to request an extended license.
+
 ## Installation
 
 Hub is composed of and relies on several open-source components to ensure scalability and high availability. The key components include:
