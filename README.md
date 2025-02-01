@@ -212,28 +212,20 @@ On AKS add following attribute, otherwise nginx will not be accessible through `
 
     --set controller.service.externalTrafficPolicy=Local
 
-# Kerberos Hub
+# Hub
 
-So once you hit this step, you should have installed a previous defined dependencies. Hopefully you didn't have too much pain with the certificates. Go to [the Kerberos Hub helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub) when installing for the first time, there you'll find all the relevant information for configuring and creating.
+So once you hit this step, you should have installed all previous defined dependencies. Go to [the Hub helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub), there you'll find all the relevant information for configuring and creating an instance of Hub.
 
-If you already know what to do, grab the latest `values.yaml` at the [Kerberos Hub Helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml), and reference it from your `helm install` or `helm upgrade` command.
+If you already know what to do, grab the latest `values.yaml` at the [Hub Helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml), and reference it from your `helm install` or `helm upgrade` command.
 
-Install the Kerberos Hub chart in a specific namespace and take into the values.yaml file.
+Install the Hub chart in a specific namespace and take into the values.yaml file.
 
     helm install hub kerberos/hub --values values.yaml -n kerberos-hub --create-namespace
 
-Upgrade the Kerberos Hub chart
+Upgrade the Hub chart
 
     helm upgrade hub kerberos/hub --values values.yaml -n kerberos-hub
 
-Uninstall the Kerberos Hub chart
+Uninstall the Hub chart
 
     helm uninstall hub -n kerberos-hub
-
-## Kerberos Hub Object Detector
-
-[The Hub Object Detector](https://github.com/kerberos-io/hub-objecttracker) shows how to levarage machine learning into Kerberos Hub. By deploying this workload in a GPU enabled Kubernetes cluster (or standalone container) you can predict and track objects in your video feeds captured by your Kerberos Agents and stored in Kerberos Vault.
-
-![Hub Object Detector](./assets/images/hub-objectdetector.png)
-
-[The object detector for Kerberos Hub](https://github.com/kerberos-io/hub-objecttracker) is showing how you connect to a message broker (RabbitMQ, Kafka or others) and how you can consume and download recordings from Kerberos Vault. In the [Kerberos Vault example directory](https://github.com/kerberos-io/vault/tree/master/examples) we are showing a concrete example of how to do this.
