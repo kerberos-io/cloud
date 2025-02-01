@@ -2,6 +2,17 @@
 
 Hub is the single pane of glass for your Agents. It comes with a best-of-breed open-source technology stack, a modular and scale-first mindset, and allows you to build and maintain an ever-growing video surveillance and video analytics landscape. With Hub, you can seamlessly integrate various components, ensuring a robust and scalable solution for all your video monitoring needs. Whether you are managing a few cameras or a large-scale deployment, Hub provides the tools and flexibility to adapt and grow with your requirements.
 
+![hub-dashboard](assets/images/hub-dashboard.gif)
+
+The Hub offers an extensive set of features that enable you to scale and manage a comprehensive video surveillance landscape:
+
+- Camera governance with groups and sites
+- On-demand livestreaming in hig definition
+- Recording overview per day.
+- Real-time notifications through the configuration of alerts.
+- Video analytics through various machine learning models
+- and many more.
+
 ## :books: Overview
 
 ### Introduction
@@ -46,24 +57,7 @@ Hub is composed of and relies on several open-source components to ensure scalab
 
 Above components are a prerequisite for a complete Hub installation. If one of the above components is missing, for example, a TURN/STUN server, it will mean that the live streaming feature will not be working.
 
-Once all components are in place you can complete the installation by configuring and installing the Hub through our [helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub).
-
-## What's in the repo?
-
-This repo describes how to install Hub inside your own Kubernetes cluster (or [K3S cluster](https://k3s.io/)) using a Helm chart.
-
-A couple of dependencies need to be installed first:
-
-- A message broker ([RabbitMQ](https://www.rabbitmq.com/), [Kafka](https://kafka.apache.org/) or others)
-- an event broker ([Vernemq](https://vernemq.com/))
-- a database ([MongoDB](https://www.mongodb.com/)),
-- and a TURN server ([Pion](https://github.com/pion/turn))
-
-Next to that one can use an Nginx ingress controller (or Traefik) for orchestrating the ingresses, however this is all up to you. Once all dependencies are installed, the appropriate values [should be updated in the Kerberos Hub `values.yaml`](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml) file.
-
-We do manage certificates through cert-manager and letsencrypt, and rely on HTTP01 and DNS01 resolvers. So you might need to change that for your custom scenarion (e.g. on premise deployment).
-
-![hub-dashboard](assets/images/hub-dashboard.gif)
+Once all components are in place you can complete the installation by configuring and installing the Hub through our [helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub) into your Kubernetes cluster.
 
 # What are we building?
 
