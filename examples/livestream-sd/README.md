@@ -56,7 +56,7 @@ To increase performance the Agent will decode, so called, keyframes. This allows
 
 As we work with keyframes, this means that the live stream in SD is also dependent of the keyframe interval of a camera. If a keyframe is only send once each 30 frames, and the frames per second (FPS) for the camera is set to 30, it means that the live view in SD will only show 1 frame per second. When the keyframe interval is set to 15 and the frames per second (FPS) is set to 30, the live view in SD will show 2 frames per second.
 
-## 4. Show <img>
+## 4. Display <img>
 
 The decrypted image, in base64 format, will then be able to inserted into a `<img>` tag. Each time a new decoded image is send to MQTT, the client will rerender the `<img>` component and show the latest image.
 
@@ -64,7 +64,7 @@ The decrypted image, in base64 format, will then be able to inserted into a `<im
 
 ## Example
 
-In the `ui` folder a React application is added which contains a working example using our [`demo enviroment`](https://app-demo.kerberos.io). To run the project, install the dependencies and run the project using `npm install`.
+In the `ui` folder a React application is created implementing the above feature, which contains a working example using our [`demo enviroment`](https://app-demo.kerberos.io). To run the project, install the dependencies and run the project using `npm install`.
 
     cd ui/
     npm install

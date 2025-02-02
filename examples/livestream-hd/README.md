@@ -87,7 +87,7 @@ The `<video>` HTML component is rendered in the browser and visualises the RTP s
 
 ## Example
 
-In the `ui` folder a React application is added which contains a working example using our [`demo enviroment`](https://app-demo.kerberos.io). To run the project, install the dependencies and run the project using `npm install`.
+In the `ui` folder a React application is created implementing the above feature, which contains a working example using our [`demo enviroment`](https://app-demo.kerberos.io). To run the project, install the dependencies and run the project using `npm install`.
 
     cd ui/
     npm install
