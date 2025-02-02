@@ -2,6 +2,8 @@
 
 Hub is the single pane of glass for your Agents. It comes with a best-of-breed open-source technology stack, a modular and scale-first mindset, and allows you to build and maintain an ever-growing video surveillance and video analytics landscape. With Hub, you can seamlessly integrate various components, ensuring a robust and scalable solution for all your video monitoring needs. Whether you are managing a few cameras or a large-scale deployment, Hub provides the tools and flexibility to adapt and grow with your requirements.
 
+> Have a look at our[demo environment](https://app-demo.kerberos.io) to experience Hub for yourself.
+
 ![hub-dashboard](assets/images/hub-dashboard.gif)
 
 Hub offers an extensive set of features that enable you to scale and manage a comprehensive video surveillance landscape:
