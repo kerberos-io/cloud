@@ -32,8 +32,6 @@ Hub offers an extensive set of features that enable you to scale and manage a co
    - [Database](#database)
    - [TURN/STUN](#turnstun)
    - [Ingress](#ingress)
-6. [Kerberos Hub](#kerberos-hub)
-   - [Kerberos Hub Object Detector](#kerberos-hub-object-detector)
 
 # Introduction
 
@@ -204,29 +202,27 @@ Within Kerberos Hub data is stored/required for users, recordings, sites, groups
 
 ### MongoDB
 
-A MongoDB instance is used for data persistence. Data might come from the Kerberos Pipeline or user interaction on the Kerberos Hub frontend. You can consider using managed MongoDB (through [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or a cloud provider like AWS, GCP, or Azure) or you can use the self-hosted deployment as mentioned below.
+Hub relies on MongoDB for data persistence, which includes metadata from the Hub pipeline and user interactions on the front-end. You have the option to use a managed MongoDB service, such as [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or a cloud provider like Amazon Web Services (AWS), Google Cloud Platform (GCP), Microsoft Azure, IBM Cloud, or Oracle Cloud. Alternatively, you can opt for a self-hosted MongoDB deployment as described below.
 
-For the self-hosted deployment, we will be using [the official bitnami mongodb helm chart](https://github.com/bitnami/charts/tree/main/bitnami/mongodb). Please navigate to their [repository](https://github.com/bitnami/charts/tree/main/bitnami/mongodb) for more configuration options.
-
-We will create a namespace for our MongoDB deployment as well.
+For a self-hosted deployment, we will use the [official Bitnami MongoDB Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/mongodb). Please refer to their [repository](https://github.com/bitnami/charts/tree/main/bitnami/mongodb) for additional configuration options. We will create a namespace for our MongoDB deployment.
 
     kubectl create namespace mongodb
 
-Create a persistent volume, this is where the data will be stored on disk.
+Next, create a persistent volume to store the data on disk.
 
     kubectl apply -f ./mongodb/fast.yaml
 
-Before installing the MongoDB helm chart, go and have a look in the `mongodb/values.yaml` file. You should update the root password to a custom secure value.
+Before installing the Helm chart, review and update the `mongodb/values.yaml` file. Ensure you set a custom secure value for the root password.
 
     helm install mongodb bitnami/mongodb --values ./mongodb/values.yaml -n mongodb
 
 ## TURN/STUN
 
-Within Hub, we allow streaming live from the edge to the cloud without port-forwarding. To make this work, we are using a technology called WebRTC that leverages a TURN/STUN server.
+Hub facilitates live streaming from the edge to the cloud without requiring port-forwarding. This is accomplished using WebRTC, which relies on a TURN/STUN server to establish and maintain the connection. To have a better understanding of how live stream works, have a look at the [examples directory](./examples).
 
 ![hub-architecture](assets/images/livestream-hd.svg)
 
-To run a TURN/STUN, we recommend installing coturn on a dedicated/stand-alone machine. The TURN/STUN server will make sure a connection from an Agent to a Hub viewer is established. More information on how to install coturn and configure it on an Ubuntu machine can be [found here](https://www.linuxbabe.com/linux-server/install-coturn-turn-server-spreed-webrtc).
+To run a TURN/STUN server, we recommend installing coturn on a dedicated machine. This server ensures a connection from an Agent to a Hub viewer is established. For detailed instructions on installing and configuring coturn on an Ubuntu machine, please refer to [this guide](https://www.linuxbabe.com/linux-server/install-coturn-turn-server-spreed-webrtc).
 
     sudo apt install coturn
     systemctl status coturn
@@ -238,34 +234,65 @@ Make the appropriate changes in the `turnserver.conf`, for example, the DNS name
 
 ## Ingress
 
-Ingresses are needed to expose the Kerberos Hub front-end and API to the internet or intranet. We prefer nginx ingress but if you would prefer Traefik, that is perfectly fine as well.
+Ingresses are essential for exposing the Hub front-end and API to the internet or intranet. While we recommend using the NGINX Ingress Controller for its robustness and widespread adoption, you may also opt for Traefik if it better suits your requirements.
 
-### Nginx
+### NGINX Ingress Controller
 
-We'll use the following helm chart `ingress-nginx` for setting up nginx in our cluster.
+To set up the NGINX Ingress Controller in your Kubernetes cluster, use the following Helm chart:
 
-    helm upgrade --install ingress-nginx ingress-nginx \
+```sh
+helm upgrade --install ingress-nginx ingress-nginx \
     --repo https://kubernetes.github.io/ingress-nginx \
     --namespace ingress-nginx --create-namespace
+```
 
-On AKS add the following attribute, otherwise nginx will not be accessible through `LoadBalancer`. You will receive a not reachable error.
+For Azure Kubernetes Service (AKS), add the following attribute to ensure the NGINX Ingress Controller is accessible through a `LoadBalancer`:
 
-    --set controller.service.externalTrafficPolicy=Local
+```sh
+--set controller.service.externalTrafficPolicy=Local
+```
+
+### Traefik Ingress Controller
+
+If you prefer using Traefik, you can install it using the following Helm chart:
+
+```sh
+helm repo add traefik https://helm.traefik.io/traefik
+helm repo update
+helm install traefik traefik/traefik --namespace traefik --create-namespace
+```
+
+Both options provide reliable ingress solutions to manage and route external traffic to your Hub services.
 
 # Hub
 
-So once you hit this step, you should have installed all previously defined dependencies. Go to [the Hub helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub), there you'll find all the relevant information for configuring and creating an instance of Hub.
+Once you have installed all the previously defined dependencies, proceed to the Hub [Helm chart repository](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub) for detailed information on configuring and creating an instance of Hub.
 
-If you already know what to do, grab the latest `values.yaml` at the [Hub Helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml), and reference it from your `helm install` or `helm upgrade` command.
+For those familiar with the process, you can obtain the latest `values.yaml` file from the Hub [Helm chart repository](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml) and reference it in your `helm install` or `helm upgrade` command.
 
-Install the Hub chart in a specific namespace and take into account the values.yaml file.
+## Install Hub Chart
 
-    helm install hub kerberos/hub --values values.yaml -n kerberos-hub --create-namespace
+To install the Hub chart in a specific namespace, ensure you reference the `values.yaml` file for configuration. Follow these steps:
 
-Upgrade the Hub chart
+1. **Create Namespace**:
 
-    helm upgrade hub kerberos/hub --values values.yaml -n kerberos-hub
+   ```sh
+   kubectl create namespace kerberos-hub
+   ```
 
-Uninstall the Hub chart
+2. **Install Hub Chart**:
 
-    helm uninstall hub -n kerberos-hub
+   ```sh
+   helm install hub kerberos/hub --values values.yaml -n kerberos-hub
+   ```
+
+3. **Upgrade Hub Chart**:
+
+   ```sh
+   helm upgrade hub kerberos/hub --values values.yaml -n kerberos-hub
+   ```
+
+4. **Uninstall Hub Chart**:
+   ```sh
+   helm uninstall hub -n kerberos-hub
+   ```
