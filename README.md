@@ -7,7 +7,7 @@ Hub is the single pane of glass for your Agents. It comes with a best-of-breed o
 Hub offers an extensive set of features that enable you to scale and manage a comprehensive video surveillance landscape:
 
 - Organize cameras with groups and sites for better governance.
-- High-definition on-demand livestreaming.
+- High-definition on-demand live streaming.
 - Daily recording overviews.
 - Real-time notifications with configurable alerts.
 - Advanced video analytics using machine learning models.
@@ -56,10 +56,10 @@ A license key specifies the number of Agents and cameras you can connect to the 
 Hub is composed of and relies on several open-source components to ensure scalability and high availability. The key components include:
 
 - **Kubernetes**: Orchestrates the deployment, scaling, and management of containerized applications.
-- **MongoDB**: storage of meta data about Agents, recordings, notifications and more.
+- **MongoDB**: Storage of metadata about Agents, recordings, notifications, and more.
 - **MQTT broker**: Facilitates bi-directional communication between Agents and Hub.
 - **AMQP broker**: Handles asynchronous event processing within the Hub.
-- **TURN/STUN server**: High definition (WebRTC) livestreaming
+- **TURN/STUN server**: High definition (WebRTC) live streaming
 
 All the components mentioned above are prerequisites for a complete Hub installation. Missing any component, such as a TURN/STUN server, will result in certain features, like live streaming, not functioning. Once all components are in place, you can finalize the installation by configuring and deploying Hub using our [Helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub) in your Kubernetes cluster. Additionally, you have the flexibility to use managed services, such as MongoDB on Azure, RabbitMQ on Amazon Web Services, or a TURN/STUN server on a virtual machine.
 
@@ -78,7 +78,7 @@ As described in the [building blocks and components section](#building-blocks-an
 
 ![hub-architecture](assets/images/hub-overview.svg)
 
-The selected components are as following:
+The selected components are as follows:
 
 - **Kubernetes**: Options include Kubernetes, Microk8s, K3S, Kind, Azure Kubernetes Service, and more.
 - **MongoDB**: Utilized as our NoSQL database.
@@ -88,13 +88,13 @@ The selected components are as following:
 
 ## API and integration
 
-Hub is a scalable and flexible solution that allows any size and type of deployment. Next to that it also makes the internal APIs available [through Swagger](https://api.cloud.kerberos.io/swagger/index.html). This allows you to build your own application on top of the Hub backbone. For example you could retrieve the existing devices, users, recordings from a specific user.
+Hub is a scalable and flexible solution that allows any size and type of deployment. Next to that, it also makes the internal APIs available [through Swagger](https://api.cloud.kerberos.io/swagger/index.html). This allows you to build your own application on top of the Hub backbone. For example, you could retrieve the existing devices, users, recordings from a specific user.
 
     curl -X 'GET' 'https://api.cloud.kerberos.io/devices' -H 'accept: application/json'
 
-Within the [`/examples`](./examples/) folder, you will find examples demonstrating how to create your own front-end application using React or another front-end framework of your choice. These examples showcase how to list available Agents for a specific user, open a livestream, and control the pan-tilt-zoom functionality of a camera.
+Within the [`/examples`](./examples/) folder, you will find examples demonstrating how to create your own front-end application using React or another front-end framework of your choice. These examples showcase how to list available Agents for a specific user, open a live stream, and control the pan-tilt-zoom functionality of a camera.
 
-# Instalation
+# Installation
 
 As discussed previously, you have the flexibility to install Hub along with its essential components such as Agent, Factory, and Vault based on your specific requirements. The following sections will guide you through the step-by-step process of installing Hub in your Kubernetes cluster.
 
@@ -110,7 +110,7 @@ To install Hub, you need to add several Helm repositories to your Kubernetes clu
 
 ## Cert manager
 
-We use cert-manager and Let's Encrypt to generate the necessary certificates for the Hub application and it's depending components. As a best practice, we will install each dependency in its own namespace. Let's begin by creating a dedicated namespace for cert-manager.
+We use cert-manager and Let's Encrypt to generate the necessary certificates for the Hub application and its depending components. As a best practice, we will install each dependency in its own namespace. Let's begin by creating a dedicated namespace for cert-manager.
 
     kubectl create namespace cert-manager
 
@@ -148,7 +148,7 @@ You might need to add a few CRDs. If you see the following error: `unable to rec
 
 Kafka is also an option but RabbitMQ is preferred. It behaves the same as RabbitMQ, consuming messages from a queue, or a topic in the case of Kafka. Kafka is integral to the Hub pipeline, where microservices operate in parallel and/or sequentially. These microservices consume events from a Kafka topic, process the recordings and their metadata, and then produce results back into Kafka for subsequent microservices. Each microservice can scale horizontally through replicas, allowing you to distribute workloads across nodes as needed.
 
-As a best practice let's create another namespace.
+As a best practice, let's create another namespace.
 
     kubectl create namespace kafka
 
@@ -200,13 +200,13 @@ Please note that the username is defined in uppercase as `YOURUSERNAME`, but it 
 
 ## Database
 
-Within Kerberos Hub data is stored/required for users, recordings, sites, groups and many other entities. As for now the entire Kerberos.io technology stack is relying on MongoDB.
+Within Kerberos Hub data is stored/required for users, recordings, sites, groups, and many other entities. As for now, the entire Kerberos.io technology stack is relying on MongoDB.
 
 ### MongoDB
 
-A MongoDB instance is used for data persistence. Data might come from the Kerberos Pipeline or user interaction on the Kerberos Hub frontend. You can consider to use managed MongoDB (through [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or a cloud provider like AWS, GCP or azure) or you can use the self-hosted deployment as mentioned below.
+A MongoDB instance is used for data persistence. Data might come from the Kerberos Pipeline or user interaction on the Kerberos Hub frontend. You can consider using managed MongoDB (through [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or a cloud provider like AWS, GCP, or Azure) or you can use the self-hosted deployment as mentioned below.
 
-For the self-hosted deployment we will be using [the official bitnami mongodb helm chart](https://github.com/bitnami/charts/tree/main/bitnami/mongodb). Please navigate to there [repository](https://github.com/bitnami/charts/tree/main/bitnami/mongodb) for more configuration options.
+For the self-hosted deployment, we will be using [the official bitnami mongodb helm chart](https://github.com/bitnami/charts/tree/main/bitnami/mongodb). Please navigate to their [repository](https://github.com/bitnami/charts/tree/main/bitnami/mongodb) for more configuration options.
 
 We will create a namespace for our MongoDB deployment as well.
 
@@ -222,43 +222,43 @@ Before installing the MongoDB helm chart, go and have a look in the `mongodb/val
 
 ## TURN/STUN
 
-Within Hub we allow streaming live from the edge to the cloud without port-forwarding. To make this work we are using a technology called WebRTC that leverages a TURN/STUN server.
+Within Hub, we allow streaming live from the edge to the cloud without port-forwarding. To make this work, we are using a technology called WebRTC that leverages a TURN/STUN server.
 
 ![hub-architecture](assets/images/livestream-hd.svg)
 
-To run a TURN/STUN we recommend installing coturn on a dedicated/stand-alone machine. The TURN/STUN server will make sure a connection from a Agent to a Hub viewer is established. More information on how to install coturn and configure it on a Ubuntu machine can be [found here](https://www.linuxbabe.com/linux-server/install-coturn-turn-server-spreed-webrtc).
+To run a TURN/STUN, we recommend installing coturn on a dedicated/stand-alone machine. The TURN/STUN server will make sure a connection from an Agent to a Hub viewer is established. More information on how to install coturn and configure it on an Ubuntu machine can be [found here](https://www.linuxbabe.com/linux-server/install-coturn-turn-server-spreed-webrtc).
 
     sudo apt install coturn
     systemctl status coturn
     sudo systemctl start coturn
 
-Make the appropriate changes in the `turnserver.conf`, for example the DNS name and user credentials.
+Make the appropriate changes in the `turnserver.conf`, for example, the DNS name and user credentials.
 
     sudo nano /etc/turnserver.conf
 
 ## Ingress
 
-Ingresses are needed to expose the Kerberos Hub front-end and api to the internet or intranet. We prefer nginx ingress but if you would prefer Traefik, that is perfectly fine as well.
+Ingresses are needed to expose the Kerberos Hub front-end and API to the internet or intranet. We prefer nginx ingress but if you would prefer Traefik, that is perfectly fine as well.
 
 ### Nginx
 
-We'll use following helm chart `ingress-nginx` for setting up nginx in our cluster.
+We'll use the following helm chart `ingress-nginx` for setting up nginx in our cluster.
 
     helm upgrade --install ingress-nginx ingress-nginx \
     --repo https://kubernetes.github.io/ingress-nginx \
     --namespace ingress-nginx --create-namespace
 
-On AKS add following attribute, otherwise nginx will not be accessible through `LoadBalancer`. You will receive an not reachable error.
+On AKS add the following attribute, otherwise nginx will not be accessible through `LoadBalancer`. You will receive a not reachable error.
 
     --set controller.service.externalTrafficPolicy=Local
 
 # Hub
 
-So once you hit this step, you should have installed all previous defined dependencies. Go to [the Hub helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub), there you'll find all the relevant information for configuring and creating an instance of Hub.
+So once you hit this step, you should have installed all previously defined dependencies. Go to [the Hub helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub), there you'll find all the relevant information for configuring and creating an instance of Hub.
 
 If you already know what to do, grab the latest `values.yaml` at the [Hub Helm chart repo](https://github.com/kerberos-io/helm-charts/blob/main/charts/hub/values.yaml), and reference it from your `helm install` or `helm upgrade` command.
 
-Install the Hub chart in a specific namespace and take into the values.yaml file.
+Install the Hub chart in a specific namespace and take into account the values.yaml file.
 
     helm install hub kerberos/hub --values values.yaml -n kerberos-hub --create-namespace
 
