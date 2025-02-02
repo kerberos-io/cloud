@@ -201,7 +201,7 @@ Before installing the MongoDB helm chart, go and have a look in the `mongodb/val
 
 Within Kerberos Hub we allow streaming live from the edge to the cloud without port-forwarding. To make this work we are using a technology called WebRTC that leverages a TURN/STUN server.
 
-![hub-architecture](assets/images/hub-stunturn.png)
+![hub-architecture](assets/images/livestream-hd.svg)
 
 To run a TURN/STUN we recommend installing coturn on a dedicated/stand-alone machine. The TURN/STUN server will make sure a connection from a Agent to a Hub viewer is established. More information on how to install coturn and configure it on a Ubuntu machine can be [found here](https://www.linuxbabe.com/linux-server/install-coturn-turn-server-spreed-webrtc).
 
