@@ -6,6 +6,6 @@ This repository contains a comprehensive video wall implementation that brings t
 
 As explained above, this example brings together some of the other features demonstrated in this repository. Please follow the respective repositories in this repository:
 
-1. [Standard-Definition Livestream](../standard-definition-livestream)
-2. [High-Definition Livestream](../high-definition-livestream)
-3. [Pan-Tilt-Zoom (PTZ)](../pan-tilt-zoom)
+1. [Standard-Definition Livestream](../livestream-sd)
+2. [High-Definition Livestream](../livestream-hd)
+3. [Pan-Tilt-Zoom (PTZ)](../onvif-ptz)

@@ -1,4 +1,4 @@
-# Low definition (JPEG) live streaming
+# Standard definition (JPEG) live streaming
 
 Hub provides two types of live view: a low resolution live view and a high resolution (on demand) live view. Depending on the application you might leverage one over the other, or, both. Below we will explain the differences, and how to open and negotiate a low resolution live view with the Agent using the concepts of MQTT and JPEG. It's important to understand that live view is an on-demand action, which requires a negotiation between the requesting client (Hub or this example application) and the remote Agent. This negotiation will setup a sessions between the client and the Agent, for a short amount of time. Once the client closes the connection or the web page, the Agent will also stop forwarding the live view.
 
