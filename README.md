@@ -24,7 +24,7 @@ Hub offers an extensive set of features that enable you to scale and manage a co
 
 ### Installation
 
-4. [Prerequisites](#prerequisites)
+5. [Prerequisites](#prerequisites)
    - [Add helm repos](#add-helm-repos)
    - [Cert manager](#cert-manager)
    - [Message broker / queue](#message-broker-or-queue)
@@ -32,8 +32,12 @@ Hub offers an extensive set of features that enable you to scale and manage a co
    - [Database](#database)
    - [TURN/STUN](#turnstun)
    - [Ingress](#ingress)
-5. [Kerberos Hub](#kerberos-hub)
+6. [Kerberos Hub](#kerberos-hub)
    - [Kerberos Hub Object Detector](#kerberos-hub-object-detector)
+
+# Introduction
+
+Before we proceed with the installation, it is crucial to understand the key considerations and prerequisites for deploying Hub. The following paragraphs will provide an overview of the essential components and configurations required to ensure a successful and efficient installation of Hub in your environment.
 
 ## License
 
@@ -74,19 +78,29 @@ As described in the [building blocks and components section](#building-blocks-an
 
 ![hub-architecture](assets/images/hub-overview.svg)
 
+The selected components are as following:
+
+- **Kubernetes**: Options include Kubernetes, Microk8s, K3S, Kind, Azure Kubernetes Service, and more.
+- **MongoDB**: Utilized as our NoSQL database.
+- **MQTT broker**: Compatible with Vernemq, Mosquitto, or any other MQTT broker.
+- **AMQP broker**: Supports RabbitMQ, Kafka, or any AMQP-compliant broker.
+- **TURN/STUN server**: Coturn is recommended.
+
 ## API and integration
 
 Hub is a scalable and flexible solution that allows any size and type of deployment. Next to that it also makes the internal APIs available [through Swagger](https://api.cloud.kerberos.io/swagger/index.html). This allows you to build your own application on top of the Hub backbone. For example you could retrieve the existing devices, users, recordings from a specific user.
 
     curl -X 'GET' 'https://api.cloud.kerberos.io/devices' -H 'accept: application/json'
 
-## Examples
+Within the [`/examples`](./examples/) folder, you will find examples demonstrating how to create your own front-end application using React or another front-end framework of your choice. These examples showcase how to list available Agents for a specific user, open a livestream, and control the pan-tilt-zoom functionality of a camera.
 
-# Prerequisites
+# Instalation
 
-## Add helm repos
+As discussed previously, you have the flexibility to install Hub along with its essential components such as Agent, Factory, and Vault based on your specific requirements. The following sections will guide you through the step-by-step process of installing Hub in your Kubernetes cluster.
 
-The Kerberos Hub installation makes use a couple of other charts which are shipped within their on Helm repos. Therefore, we will add those repos to our Kubernetes cluster.
+## Add Helm Repositories
+
+To install Hub, you need to add several Helm repositories to your Kubernetes cluster. These repositories contain the necessary Helm charts for Hub and its dependencies.
 
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm repo add jetstack https://charts.jetstack.io
@@ -96,45 +110,43 @@ The Kerberos Hub installation makes use a couple of other charts which are shipp
 
 ## Cert manager
 
-We rely on cert-manager and letsencrypt for generating all the certificates we'll need for the Kerberos Hub web interface, Kerberos Hub api and the Vernemq broker (WSS/TLS).
-
-As a best practice we will install all the dependencies in their own namespace. Let's start by creating a separate namespace for cert-manager.
+We use cert-manager and Let's Encrypt to generate the necessary certificates for the Hub application and it's depending components. As a best practice, we will install each dependency in its own namespace. Let's begin by creating a dedicated namespace for cert-manager.
 
     kubectl create namespace cert-manager
 
-Install the cert-manager helm chart into that namespace.
+Install the cert-manager Helm chart into the `cert-manager` namespace.
 
     helm install cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
 
-If you already have the CRDs install you could get rid of `--set installCRDs=true`.
+If you already have the CRDs installed, you can omit the `--set installCRDs=true` flag.
 
-Next we will install a cluster issuer that will make the HTTP01 challenges, this is needed for resolving the certificates of both Kerberos Hub web interface and api.
+Next, we will install a cluster issuer to handle HTTP01 challenges. This is necessary for resolving the certificates for both the Kerberos Hub web interface and API.
 
     kubectl apply -f cert-manager/cluster-issuer.yaml
 
 ## Message broker or queue
 
-To integrate, scale and make Kerberos Hub more resilient the Kerberos Hub pipeline is using a message broker (or queue) to provide a resilient message flow. The message broker integrates the different micro services you'll find in Kerberos Hub, and allow you to scale specific services independently. As of now we suppor two main messages brokers: RabbitMQ and Kafka. Depending on your current solution landscape and/or skills you might prefer one over the other.
+To enhance integration, scalability, and resilience, the Hub pipeline utilizes a message broker to ensure a robust message flow. The message broker integrates various microservices within Hub, allowing you to scale specific microservices independently. Currently, we support two primary message brokers: RabbitMQ and Kafka. Depending on your existing infrastructure and expertise, you may prefer one over the other.
 
 ### RabbitMQ (preferred)
 
-RabbitMQ is the preferred message broker, as it's easy to setup, scale and comes with high availability out of the box. RabbitMQ will distribute messages to the different consumer (microservices). Instead of self-hosting a RabbitMQ (as shown below), you might also use a RabbitMQ hosted on a cloud provider like (AWS, GCP, Azure, etc). We support both AMQP and AMQPS.
+RabbitMQ is the preferred message broker due to its ease of setup, scalability, and built-in high availability. RabbitMQ efficiently distributes messages to various consumers, such as microservices. You can choose to self-host RabbitMQ as shown below, or use a managed RabbitMQ service provided by cloud providers like Amazon Web Services (AWS), Google Cloud Platform (GCP), or Microsoft Azure. Both Advanced Message Queuing Protocol (AMQP) and AMQP Secure (AMQPS) protocols are supported. RabbitMQ serves as an orchestrator for the Hub pipeline, creating multiple queues linked to various microservices.
 
-As a best practice let's create another namespace.
+As a best practice, let's create a separate namespace for rabbitmq.
 
     kubectl create namespace rabbitmq
 
-Before installing [the RabbitMQ helm chart,](https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq) make sure to have a look at the `rabbitmq/values.yaml` file. This includes different variables such as `username`, `password`, `replicaCount` and more. Change those settings for your own preference or usecase.
+Before installing the [RabbitMQ Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq), review the `rabbitmq/values.yaml` file. This file contains various configuration options such as `username`, `password`, and `replicaCount`. Adjust these settings according to your preferences and use case.
 
     helm install rabbitmq bitnami/rabbitmq -n rabbitmq -f rabbitmq/values.yaml --version 11.12.0
 
-You might need to add a few CRD's. If you see following error, `unable to recognize "": no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1`.
+You might need to add a few CRDs. If you see the following error: `unable to recognize "": no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1`, you need to install the Prometheus operator CRDs. To install the Prometheus operator CRDs, run the following command:
 
     kubectl create -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/master/bundle.yaml
 
-### or Kafka
+### Kafka
 
-Kafka is used for the Kerberos Pipeline, this is the place where microservices are executed in parallel and/or sequentially. These microservices will receive events from a Kafka topic and then process the recording, and it's metadata. Results are injected back into Kafka and passed on to the following microservices. Microservices are independently horizontal scalable through replicas, this means that you can distribute your workload across your nodes if a specific microservice requires that.
+Kafka is also an option but RabbitMQ is preferred. It behaves the same as RabbitMQ, consuming messages from a queue, or a topic in the case of Kafka. Kafka is integral to the Hub pipeline, where microservices operate in parallel and/or sequentially. These microservices consume events from a Kafka topic, process the recordings and their metadata, and then produce results back into Kafka for subsequent microservices. Each microservice can scale horizontally through replicas, allowing you to distribute workloads across nodes as needed.
 
 As a best practice let's create another namespace.
 
@@ -146,34 +158,45 @@ Before installing the Kafka helm chart, go and have a look in the kafka/values.y
 
 ## Event broker
 
-Next to a message broker, we are using an event broker (MQTT) for bidirectional communication in the Kerberos Hub ecosystem. As shown below we recommended vernemq in a self-hosted scenario as it provides horizantal scale, however nothing is stopping you to install a `Mosquitto` MQTT broker on a seperate VM if you prefer, or use a managed MQTT broker on a cloud provider like AWS, GCP, Azure, etc.
+In addition to a message broker, we utilize an event broker (MQTT) for bidirectional communication within the Hub ecosystem. We recommend using Vernemq in a self-hosted scenario due to its horizontal scalability. However, you can also opt to install a `mosquitto` MQTT broker on a separate virtual machine or use a managed MQTT broker from cloud providers like Amazon Web Services (AWS), Google Cloud Platform (GCP), or Microsoft Azure, depending on your preference.
 
 ### Vernemq
 
-This Vernemq broker, which is horizontal scalable, allows communicating with Kerberos agents at the edge (or wherever they live) and Kerberos Vault to forward recordings from the edge into the cloud.
-
-We'll create a namespace for our event broker Vernemq.
+Let's create a dedicated namespace for our event broker, Vernemq.
 
     kubectl create namespace vernemq
 
-Create a certificate, so we can handle TLS/WSS. (this needs a DNS challenge)
+To handle TLS/WSS, you need to create a certificate using a DNS challenge. Follow these steps to set up the certificate:
 
-    kubectl apply -f vernemq/vernemq-secret.yaml --namespace cert-manager
-    kubectl apply -f vernemq/vernemq-issuer.yaml --namespace vernemq
-    kubectl apply -f vernemq/vernemq-certificate.yaml --namespace vernemq
+1. **Create a Secret for DNS Challenge**:
 
-By default, a username and password is set for the Vernemq broker. You can find these in the `vernemq/values.yaml` file [as shown below](https://github.com/kerberos-io/hub/blob/master/vernemq/values.yaml#L216-L217).
+   ```sh
+   kubectl apply -f vernemq/vernemq-secret.yaml --namespace cert-manager
+   ```
 
-    ...
-    - name: DOCKER_VERNEMQ_USER_YOURUSERNAME
-    value: "yourpassword"
-    ...
+2. **Create a Cluster Issuer**:
 
-Please note that the username is defined in capitals `YOURUSERNAME`, but will result as `yourusername`. So anything written in capitals, will be lowercase.
+   ```sh
+   kubectl apply -f vernemq/vernemq-issuer.yaml --namespace vernemq
+   ```
 
-Go a head and install the Vernemq chart with the relevant configuration options.
+3. **Create the Certificate**:
+   ```sh
+   kubectl apply -f vernemq/vernemq-certificate.yaml --namespace vernemq
+   ```
 
-    helm install vernemq vernemq/vernemq -f vernemq/values.yaml  --namespace vernemq
+Ensure that the DNS records are correctly configured to point to your cluster for the DNS challenge to succeed.
+
+By default, a username and password are set for the Vernemq broker. You can find these in the `vernemq/values.yaml` file.
+
+```yaml
+- name: DOCKER_VERNEMQ_USER_YOURUSERNAME
+  value: "yourpassword"
+```
+
+Please note that the username is defined in uppercase as `YOURUSERNAME`, but it will be converted to lowercase as `yourusername`. Any text written in uppercase will be transformed to lowercase. Proceed to install the Vernemq chart with the appropriate configuration options.
+
+    helm install vernemq vernemq/vernemq -f vernemq/values.yaml --namespace vernemq
 
 ## Database
 
@@ -199,7 +222,7 @@ Before installing the MongoDB helm chart, go and have a look in the `mongodb/val
 
 ## TURN/STUN
 
-Within Kerberos Hub we allow streaming live from the edge to the cloud without port-forwarding. To make this work we are using a technology called WebRTC that leverages a TURN/STUN server.
+Within Hub we allow streaming live from the edge to the cloud without port-forwarding. To make this work we are using a technology called WebRTC that leverages a TURN/STUN server.
 
 ![hub-architecture](assets/images/livestream-hd.svg)
 
