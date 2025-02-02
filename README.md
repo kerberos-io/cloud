@@ -20,6 +20,7 @@ Hub offers an extensive set of features that enable you to scale and manage a co
 1. [License](#license)
 2. [Building blocks and components](#building-blocks-and-components)
 3. [Architecture](#architecture)
+4. [API and integration](#api-and-integration)
 
 ### Installation
 
@@ -72,6 +73,14 @@ As described in the [building blocks and components section](#building-blocks-an
 - Explore various other deployment configurations to suit your needs.
 
 ![hub-architecture](assets/images/hub-overview.svg)
+
+## API and integration
+
+Hub is a scalable and flexible solution that allows any size and type of deployment. Next to that it also makes the internal APIs available [through Swagger](https://api.cloud.kerberos.io/swagger/index.html). This allows you to build your own application on top of the Hub backbone. For example you could retrieve the existing devices, users, recordings from a specific user.
+
+    curl -X 'GET' 'https://api.cloud.kerberos.io/devices' -H 'accept: application/json'
+
+## Examples
 
 # Prerequisites
 
