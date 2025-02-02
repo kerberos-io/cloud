@@ -50,18 +50,26 @@ A license key specifies the number of Agents and cameras you can connect to the 
 
 Hub is composed of and relies on several open-source components to ensure scalability and high availability. The key components include:
 
+- **Kubernetes**: Orchestrates the deployment, scaling, and management of containerized applications.
 - **MongoDB**: storage of meta data about Agents, recordings, notifications and more.
 - **MQTT broker**: Facilitates bi-directional communication between Agents and Hub.
 - **AMQP broker**: Handles asynchronous event processing within the Hub.
 - **TURN/STUN server**: High definition (WebRTC) livestreaming
 
-Above components are a prerequisite for a complete Hub installation. If one of the above components is missing, for example, a TURN/STUN server, it will mean that the live streaming feature will not be working.
+All the components mentioned above are prerequisites for a complete Hub installation. Missing any component, such as a TURN/STUN server, will result in certain features, like live streaming, not functioning. Once all components are in place, you can finalize the installation by configuring and deploying Hub using our [Helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub) in your Kubernetes cluster. Additionally, you have the flexibility to use managed services, such as MongoDB on Azure, RabbitMQ on Amazon Web Services, or a TURN/STUN server on a virtual machine.
 
-Once all components are in place you can complete the installation by configuring and installing the Hub through our [helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub) into your Kubernetes cluster.
+Hub is designed to be stateless, relying on the previously mentioned components for state persistence. For high availability, resilience, and scalability, we strongly recommend deploying Hub in Kubernetes. As a best practice, consider running stateful workloads outside the Kubernetes cluster when possible. For example, outsourcing MongoDB management can reduce operational overhead, allowing you to focus on other critical deployment aspects. However, in some cases, such as air-gap deployments, you may need to host all components within Kubernetes.
 
 ## Architecture
 
-As shown below you will find the architecture of what we are going to install (the green rectangle).
+Hub, Vault, Factory, and Agents support various deployment options: on-premise, hybrid, cloud, and combinations thereof. Depending on your project's requirements, you can choose the most suitable deployment strategy. For an overview of the different deployment options, visit our [documentation website](https://doc.kerberos.io/prologue/deployments/).
+
+As described in the [building blocks and components section](#building-blocks-and-components), Hub relies on various open-source components. The architecture below illustrates the flexibility you have in deploying each component. For instance, you can:
+
+- Deploy your Agents at the edge, with or without Factory.
+- Implement edge storage with Vault for buffering or machine learning.
+- Opt for a complete offline deployment.
+- Explore various other deployment configurations to suit your needs.
 
 ![hub-architecture](assets/images/hub-overview.svg)
 
