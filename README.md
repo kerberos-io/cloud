@@ -61,6 +61,8 @@ Hub is composed of and relies on several open-source components to ensure scalab
 
 All the components mentioned above are prerequisites for a complete Hub installation. Missing any component, such as a TURN/STUN server, will result in certain features, like live streaming, not functioning. Once all components are in place, you can finalize the installation by configuring and deploying Hub using our [Helm chart](https://github.com/kerberos-io/helm-charts/tree/main/charts/hub) in your Kubernetes cluster. Additionally, you have the flexibility to use managed services, such as MongoDB on Azure, RabbitMQ on Amazon Web Services, or a TURN/STUN server on a virtual machine.
 
+![Building blocks](./assets/images/building-blocks.svg)
+
 Hub is designed to be stateless, relying on the previously mentioned components for state persistence. For high availability, resilience, and scalability, we strongly recommend deploying Hub in Kubernetes. As a best practice, consider running stateful workloads outside the Kubernetes cluster when possible. For example, outsourcing MongoDB management can reduce operational overhead, allowing you to focus on other critical deployment aspects. However, in some cases, such as air-gap deployments, you may need to host all components within Kubernetes.
 
 ## Architecture
