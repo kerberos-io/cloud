@@ -34,6 +34,7 @@ class App extends React.Component {
     'camera8',
     'camera9',
     'camera1',
+    'camera1',
 
     // ... and more
   ]
@@ -55,24 +56,37 @@ class App extends React.Component {
     this.setState({ globalStreamMode: streamMode });
   };
 
-  getAgentWidth(pageWidth, pageHeight, agentCount) {
-    const agentWidth = Math.floor(Math.sqrt((pageWidth * pageHeight) / agentCount));
-    // RETURN THE AGENT WIDTH
-    console.log('Agent Width: ', agentWidth);
-    // return agentWidth;
-    return 300;
-  }
-
   updateDimensions = () => {
+
+    const pageHeight = window.innerHeight;
+    const pageWidth = window.innerWidth;
+    const agentCount = this.agents.length;
+
+    console.log('Page Height: ', pageHeight);
+    console.log('Page Width: ', pageWidth);
+    console.log('Agent Count: ', agentCount);
+
+    // Unbound area into width and height, do not use sqrt
+    const totalAreaofAgent = (((pageHeight * pageWidth)) / agentCount);
+    const agentWidth = Math.floor(Math.sqrt(totalAreaofAgent))
+    const agentHeight = Math.floor(totalAreaofAgent / agentWidth);
+    
+
+    console.log('Agent Width: ', agentWidth);
+    console.log('Agent Height: ', agentHeight);
+
+    const agentNewArea = agentWidth * agentHeight * agentCount;
+    console.log('Agent New Area: ', agentNewArea);
+    console.log('Page Area: ', pageHeight * pageWidth);
+    
+
 
     this.setState({
       pageHeight: window.innerHeight,
       pageWidth: window.innerWidth,
-      agentWidth: this.getAgentWidth(this.state.pageWidth, this.state.pageHeight, this.state.agentCount),
+      agentWidth: agentWidth,
+      agentHeight: agentHeight
     });
-    console.log('Page Height: ', this.state.pageHeight);
-    console.log('Page Width: ', this.state.pageWidth);
-    console.log('Agent Count: ', this.state.agentCount);
   };
 
 
@@ -104,7 +118,7 @@ class App extends React.Component {
 
     const baseStyle = "flex justify-center items-centerd p-3 h-full";
     const selectedStyle = `${baseStyle} bg-gray-800 text-white`;
-    const { globalStreamMode, agentWidth } = this.state;
+    const { globalStreamMode, agentWidth, agentHeight } = this.state;
 
     return <div id="page-root" class="flex-1 flex flex-col h-full">
     <Main className="flex-1 flex flex-col h-full">
@@ -126,9 +140,12 @@ class App extends React.Component {
       </div>
 
       {/* Wait for MQTT connection before rendering streams */}
-      <div className={`grid gap-0 bg-white pb-4 h-full overflow-hidden`} style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${agentWidth}px, 1fr))` }}>
+      <div className={`grid gap-0 bg-white pb-4 h-full overflow-hidden`} style={{ 
+        gridTemplateColumns: `repeat(auto-fill, minmax(${agentHeight}px, 1fr))` ,
+        gridTemplateRows: `repeat(auto-fill, minmax(${agentWidth}px, 1fr))` ,
+        }}>
       { this.state.connected && this.agents.map((agent, index) => {
-        return <div className="relative group w-full flex items-center justify-center bg-black text-white" key={agent + index} style={{ height: agentWidth }}>
+        return <div className="relative group flex items-center justify-center bg-black text-white" key={agent + index}>
                   <Stream name={agent} 
                           mqtt={this.mqtt}
                           globalStreamMode={globalStreamMode}/>

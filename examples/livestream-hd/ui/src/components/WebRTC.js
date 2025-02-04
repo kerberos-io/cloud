@@ -108,10 +108,11 @@ class WebRTC extends React.Component {
 
     handleConnectionStateChangeEvent() {
         if (this.peerConnection.connectionState === 'connected') {
-            console.log('connected');
             const videoElement = this.videoRef.current;
-            if (videoElement) {
-                videoElement.play();
+            if (videoElement && videoElement.play) {
+                videoElement.play().catch(error => {
+                    console.error('Error playing video:', error);
+                });
             }
         }
     }
