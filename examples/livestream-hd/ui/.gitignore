@@ -19,7 +19,6 @@
 .env.test.local
 .env.production.local
 
-/public/assets/env.js
 /public/output.css
 
 npm-debug.log*
