@@ -30,7 +30,6 @@ class JPEG extends React.Component {
         clearInterval(this.intervalId);
     }
 
-
     subscribe() {
         // We're listening for the "receive-sd-stream" action for the specific
         // camera (all other actions are ignored).
