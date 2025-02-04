@@ -66,7 +66,7 @@ class Stream extends React.Component {
         const selectedStyle = `${baseStyle} bg-gray-800 text-white`;
 
         return (
-            <div className="w-full min-h-60 border-2 border-red-500">
+            <div className="w-full h-full min-h-60">
                 <div>
                     <div className="absolute top-2 right-2 text-gray-800/70 bg-gray-400/70 rounded-full flex items-center overflow-hidden justify-center text-xs z-50">
                         <button className={(streamMode === STREAM_MODE_OPTIONS.JPEG) ? selectedStyle : baseStyle}  onClick={() => this.changeStream(STREAM_MODE_OPTIONS.JPEG)}>SD</button>
@@ -85,8 +85,8 @@ class Stream extends React.Component {
                     <button className="absolute bottom-20 left-2 z-50 p-2 rounded-md hover:bg-gray-400/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"><VscSettings /></button>
                     <button className="absolute bottom-2 right-2 z-50 p-2 rounded-md hover:bg-gray-400/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"><RiFullscreenLine /></button>
                 </div>
-                {/* {streamMode === STREAM_MODE_OPTIONS.JPEG && <JPEG name={name} mqtt={mqtt}></JPEG>} 
-                {streamMode === STREAM_MODE_OPTIONS.WEBRTC && <WebRTC name={name} mqtt={mqtt}></WebRTC>} */}
+                {streamMode === STREAM_MODE_OPTIONS.JPEG && <JPEG name={name} mqtt={mqtt}></JPEG>} 
+                {streamMode === STREAM_MODE_OPTIONS.WEBRTC && <WebRTC name={name} mqtt={mqtt}></WebRTC>}
             </div>
         );
     }
