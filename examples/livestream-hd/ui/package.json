@@ -4,14 +4,19 @@
   "private": true,
   "dependencies": {
     "@kerberos-io/ui": "^1.77.0",
+    "@tailwindcss/cli": "^4.0.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "cross-env": "^7.0.3",
     "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.7",
     "mqtt": "^5.7.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-icons": "^5.4.0",
     "react-scripts": "5.0.1",
+    "tailwindcss": "^4.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -38,7 +43,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "tailwindcss": "^3.4.17"
-  }
+  "devDependencies": {}
 }

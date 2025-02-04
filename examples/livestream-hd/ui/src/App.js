@@ -6,28 +6,36 @@ import {
   Main,
   Gradient,
 } from '@kerberos-io/ui';
+import { STREAM_MODE_OPTIONS } from './constants/constants';
 ;
-
 class App extends React.Component {
 
   // MQTT broker connection details, this is used to communicate
   // Between this application and the Agent.
-  mqttURI = 'wss://mqtt.xxx.xx:8443/mqtt';
-  mqttUsername = '';
-  mqttPassword = '';
+  mqttURI = window.env.MQTT_URI;
+  mqttUsername = window.env.MQTT_USERNAME;
+  mqttPassword = window.env.MQTT_PASSWORD;
 
   // To communicate with the Agents, we need to use the hubPublicKey and hubPrivateKey.
   // The public key is used to target the desired agents within a Hub subscription.
   // The private key is used to encrypt and decrypt the data secu
-  hubPublicKey = 'xxx';
-  hubPrivateKey = 'xxx';
+  hubPublicKey = window.env.HUB_PUBLIC_KEY;
+  hubPrivateKey = window.env.HUB_PRIVATE_KEY;
 
   // List of agents (cameras) to display, we'll use the Agent id
   // to get the stream of the desired cameras.
   agents = [
-    'local-agent',
-    //'my-agent',
-    //'my-agent2',
+    'camera2',
+    'camera3',
+    'camera4',
+    'camera5',
+    'camera6',
+    'camera7',
+    'camera8',
+    'camera9',
+    'camera1',
+
+    // ... and more
   ]
 
   constructor() {
@@ -35,9 +43,39 @@ class App extends React.Component {
     this.state = {
       isConnecting: true,
       connected: false,
-      error: false
+      error: false,
+      globalStreamMode: STREAM_MODE_OPTIONS.WEBRTC,
+      pageHeight: window.innerHeight,
+      pageWidth: window.innerWidth,
+      agentCount: this.agents.length,
     };
   }
+
+  changeGlobalStreamMode = (streamMode) => {
+    this.setState({ globalStreamMode: streamMode });
+  };
+
+  getAgentWidth(pageWidth, pageHeight, agentCount) {
+    const agentWidth = Math.floor(Math.sqrt((pageWidth * pageHeight) / agentCount));
+    // RETURN THE AGENT WIDTH
+    console.log('Agent Width: ', agentWidth);
+    // return agentWidth;
+    return 300;
+  }
+
+  updateDimensions = () => {
+
+    this.setState({
+      pageHeight: window.innerHeight,
+      pageWidth: window.innerWidth,
+      agentWidth: this.getAgentWidth(this.state.pageWidth, this.state.pageHeight, this.state.agentCount),
+    });
+    console.log('Page Height: ', this.state.pageHeight);
+    console.log('Page Width: ', this.state.pageWidth);
+    console.log('Agent Count: ', this.state.agentCount);
+  };
+
+
 
   componentDidMount(){
     this.mqtt = new MQTT({
@@ -54,24 +92,48 @@ class App extends React.Component {
         connected: connected
       });
     });
+
+    // Get initial dimensions
+    this.updateDimensions();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', this.updateDimensions);
   }
 
   render() {
-    return <div id="page-root">
-    <Main>
+
+    const baseStyle = "flex justify-center items-centerd p-3 h-full";
+    const selectedStyle = `${baseStyle} bg-gray-800 text-white`;
+    const { globalStreamMode, agentWidth } = this.state;
+
+    return <div id="page-root" class="flex-1 flex flex-col h-full">
+    <Main className="flex-1 flex flex-col h-full">
       <Gradient />
-      {this.state.isConnecting && <div>Connecting to MQTT.</div>}
-      {this.state.error && <div>Error connecting to MQTT.</div>}
-      {this.state.connected && <div>Connected to MQTT!</div>}
+      <div className='flex justify-between items-center h-10 bg-black'>
+        {this.state.isConnecting && <div className='bg-orange-500 text-orange-50 p-2 w-fit'>Connecting to MQTT.</div>}
+        {this.state.error && <div className='bg-red-500 text-red-50 p-2 w-fit'>Error connecting to MQTT.</div>}
+        {this.state.connected && <div className='bg-green-500 text-green-50 p-2 w-fit'>Connected to MQTT!</div>}
+
+        <div className='flex justify-center items-center gap-2 h-full'>
+          <div className="flex items-center gap-2 text-white h-full shadow-md">
+            <span>All</span>
+            <div className="text-gray-800 bg-gray-400 bg-opacity-70 flex items-center overflow-hidden justify-center h-full text-xs z-50">
+                <button className={(globalStreamMode === STREAM_MODE_OPTIONS.JPEG) ? selectedStyle : baseStyle} onClick={() => this.changeGlobalStreamMode(STREAM_MODE_OPTIONS.JPEG)}>SD</button>
+                <button className={(globalStreamMode === STREAM_MODE_OPTIONS.WEBRTC) ? selectedStyle : baseStyle} onClick={() => this.changeGlobalStreamMode(STREAM_MODE_OPTIONS.WEBRTC)}>HD</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Wait for MQTT connection before rendering streams */}
-      <div className="grid justify-items-stretch grid-cols-3 gap-0 bg-white pt-4 pb-4">
-      { this.state.connected && this.agents.map((agent) => {
-        return <div className="relative flex items-center bg-black text-white" key={agent}>
-          <Stream name={agent} 
-                  mqtt={this.mqtt}/>
-          <div className="absolute top-0 right-0 bg-black text-white p-2">{agent}</div>
-        </div>
+      <div className={`grid gap-0 bg-white pb-4 h-full overflow-hidden`} style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${agentWidth}px, 1fr))` }}>
+      { this.state.connected && this.agents.map((agent, index) => {
+        return <div className="relative group w-full flex items-center justify-center bg-black text-white" key={agent + index} style={{ height: agentWidth }}>
+                  <Stream name={agent} 
+                          mqtt={this.mqtt}
+                          globalStreamMode={globalStreamMode}/>
+                  <div className="absolute top-0 left-0 bg-black text-white p-2">{agent}</div>
+                </div>
       })}
       </div>
     </Main>

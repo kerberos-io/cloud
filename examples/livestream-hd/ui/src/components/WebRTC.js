@@ -16,8 +16,8 @@ class WebRTC extends React.Component {
 
         this.peerConnection = new RTCPeerConnection({
             iceServers: [
-                { urls: 'stun:turn.kerberos.io:8443' },
-                { urls: 'turn:turn.kerberos.io:8443', username: 'username1', credential: 'password1' }
+                { urls: window.env.STUN_URI },
+                { urls: window.env.TURN_URI, username: window.env.WEBRTC_USERNAME, credential: window.env.WEBRTC_PASSWORD }
             ]
         });
 
@@ -137,7 +137,7 @@ class WebRTC extends React.Component {
 
     render(){
         return (
-            <video style={{width: "100%"}} ref={this.videoRef} muted controls></video>
+            <video style={{width: "100%"}} ref={this.videoRef} muted></video>
         );
     }
 }
