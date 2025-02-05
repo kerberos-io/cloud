@@ -1,66 +1,60 @@
-# Low definition (JPEG) live streaming
+# Pan-tilt and zoom (PTZ)
 
-Hub provides two types of live view: a low resolution live view and a high resolution (on demand) live view. Depending on the application you might leverage one over the other, or, both. Below we will explain the differences, and how to open and negotiate a low resolution live view with the Agent using the concepts of MQTT and JPEG. It's important to understand that live view is an on-demand action, which requires a negotiation between the requesting client (Hub or this example application) and the remote Agent. This negotiation will setup a sessions between the client and the Agent, for a short amount of time. Once the client closes the connection or the web page, the Agent will also stop forwarding the live view.
+Hub enables remote control of your camera's pan, tilt, and zoom (PTZ) functions. This is accomplished through communication between the Hub and a remote Agent using the MQTT protocol. Users can pan left, right, tilt up, down, or zoom in and out from the Hub interface. When combined with the real-time high-definition live stream, users can monitor and control their cameras with minimal delay.
 
 ## Architecture
 
-Hub and Agent provide a low resolution live view, which includes a single frames per second (FPS) stream. To enable this functionality, the MQTT protocol is used for requesting a stream of JPEGs. We will describe the communication flow in detail below.
+Hub and Agent communicate through an encrypted MQTT connection. When a user accesses the Hub and activates pan, tilt, or zoom functions, an encrypted MQTT message is sent from the Hub to the Agent. The Agent then translates this request into an ONVIF payload, which is sent directly to the camera's ONVIF API.
 
-![Livestreaming SD](./livestream-sd.svg)
+![Livestreaming PTZ](./livestream-ptz.svg)
 
-The negotiation of a JPEG stream is pretty straight forward, we'll detail each step below.
+## 1. Pan, tilt or zoom
 
-## 1. Request JPG
+When a user opens the application and selects a specific Agent, controls for pan, tilt, and zoom are displayed as an overlay on the live view. By hovering over the live view, the user can access these controls and select the desired pan, tilt, or zoom function.
 
-An user opens the application, and either activates the JPEG (SD) stream or the application automatically loads the JPEG stream without any user interaction (for example video wall behaviour).
+## 2. Send PTZ position
 
-## 2. Request stream
+A `navigate-ptz` payload is created and transferred to the remote Agent using an MQTT broker. The payload includes all necessary information such as the desired Agent, the action, etc. When a user clicks a specific action (e.g., move right, zoom in), an individual `navigate-ptz` payload is sent. This ensures that each action is executed immediately and accurately. As soon as the user performs another action, a new payload is sent to update the PTZ functions accordingly.
 
-A `request-sd-stream` payload is created and transferred to the remote Agent using a MQTT broker. The payload includes all necessary information such as the desired Agent, the action, etc. In essence the `request-sd-stream` is a polling mechanism, as it will be sending the `request-sd-stream` payload continuously in a interval; for example every 3 seconds. As a response the remote Agent uses this approach to understand if a user is still expecting a live stream to be shown in the application. As soon as the user closes the application or web page the remote Agent will stop receiving the `request-sd-stream` payload and in a response will also stop sending the live stream.
+    // For pan/tilt: move right (=1)
+     const action = {
+        action: "ptz",
+        payload: {
+            up: 0,
+            down: 0,
+            left: 0,
+            right: 1,
+            center: 0,
+        }
+    };
 
-    setInterval(() => {
-        this.publish();
-    }, 3000);
+    // For zoom: in (use 1), out (use -1)
+    const action = {
+        action: "zoom",
+        payload: {
+            zoom: 1,
+        }
+    };
 
-    publish() {
+    publish(action) {
         const payload = {
-            action: "request-sd-stream",
+            action: "navigate-ptz",
             device_id: this.name,
             value: {
                 timestamp: Math.floor(Date.now() / 1000),
+                action: JSON.stringify(action)
             }
         };
         this.mqtt.publish(payload);
     }
 
-## 3. Receive JPEG
+## 3. Zoom or pan-tilt camera
 
-As soon as the first Agent received the `request-sd-stream` payload it will start encoding individual frames from the underlaying RTSP stream and forward it as a JPEG to the MQTT broker. In a response the client will subscribe to the MQTT topic and will be able to decrypt the payload to a valid base64 encoded image.
+Once the Agent receives the MQTT payload, it will parse the `navigate-ptz` action and generate an appropriate ONVIF payload with the specified configuration. This ONVIF payload is then sent directly to the camera's ONVIF API. If the operation is successful, the camera will adjust to the desired pan, tilt, or zoom position as requested. The Agent ensures that each command is executed precisely, allowing for smooth and accurate control of the camera's PTZ functions.
 
-    subscribe() {
-        // We're listening for the "receive-sd-stream" action for the specific
-        // camera (all other actions are ignored).
-        // Each time we receive a message with this action, we update the liveview state.
-        this.mqtt.on(this.name, (_, message) => {
-            const { payload } = message;
-            if (payload.action === "receive-sd-stream") {
-                const { value } = payload;
-                this.setState({
-                    liveview: value.image
-                });
-            }
-        });
-    }
+## 4. Observe
 
-To increase performance the Agent will decode, so called, keyframes. This allows to have a bit more performant way of translating the raw RTP packets into a JPEG stream. Keyframes are special RTP packets which store information of an entire frame.
-
-As we work with keyframes, this means that the live stream in SD is also dependent of the keyframe interval of a camera. If a keyframe is only send once each 30 frames, and the frames per second (FPS) for the camera is set to 30, it means that the live view in SD will only show 1 frame per second. When the keyframe interval is set to 15 and the frames per second (FPS) is set to 30, the live view in SD will show 2 frames per second.
-
-## 4. Show <img>
-
-The decrypted image, in base64 format, will then be able to inserted into a `<img>` tag. Each time a new decoded image is send to MQTT, the client will rerender the `<img>` component and show the latest image.
-
-    <img src={`data:image/png;base64, ${liveview}`} alt="Liveview" />
+MQTT responses are sent within milliseconds, ensuring that the user experiences minimal delay between issuing a command and seeing the camera's new position. This rapid response time means that the camera's pan, tilt, or zoom adjustments are reflected almost instantaneously, typically in less than a second. This near real-time feedback is crucial for effective monitoring and control, allowing users to make precise adjustments and observe the results immediately.
 
 ## Example
 
