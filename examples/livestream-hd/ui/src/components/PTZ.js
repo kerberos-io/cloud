@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { act } from 'react';
 import { IoIosArrowBack, IoIosArrowDown, IoIosArrowForward, IoIosArrowUp } from "react-icons/io";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { DIRECTIONS, ZOOM_OPTIONS } from '../constants/constants';
@@ -15,42 +15,76 @@ class PTZ extends React.Component {
     componentDidMount() {
         const { mqtt, name } = this.props;
         this.mqtt = mqtt;
+        console.log('Overlay MQTT: ', mqtt);
         this.name = name;
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.mqtt !== this.props.mqtt) {
+            this.mqtt = this.props.mqtt;
+        }
+        if (prevProps.name !== this.props.name) {
+            this.name = this.props.name;
+        }
+    }
+
     zoom = (zoomDirection = ZOOM_OPTIONS.IN) => {
+        const action = {
+            action: "zoom",
+            payload: {
+                zoom: 0,
+            }
+        };
+
         if (zoomDirection === ZOOM_OPTIONS.IN) {
-            console.log("Zoom In");
+            action.payload.zoom = 1;
+            this.publish(action);
         } else {
-            console.log("Zoom Out");
+            action.payload.zoom = -1;
+            this.publish(action);
         }
     };
 
     move = (direction = DIRECTIONS.UP) => {
+        const action = {
+            action: "ptz",
+            payload: {
+              up: 0,
+              down: 0,
+              left: 0,
+              right: 0,
+              center: 0,
+            }
+        };
+
         switch (direction) {
             case DIRECTIONS.UP:
-                console.log("Move Up");
+                action.payload.up = 1;
                 break;
             case DIRECTIONS.DOWN:
-                console.log("Move Down");
+                action.payload.down = 1;
+                this.publish(action);
                 break;
             case DIRECTIONS.LEFT:
-                console.log("Move Left");
+                action.payload.left = 1;
+                this.publish(action);
                 break;
             case DIRECTIONS.RIGHT:
-                console.log("Move Right");
+                action.payload.right = 1;
+                this.publish(action);
                 break;
             default:
                 break;
         }
     }
 
-    publish() {
+    publish(action) {
         const payload = {
-            action: "request-sd-stream",
+            action: "navigate-ptz",
             device_id: this.name,
             value: {
                 timestamp: Math.floor(Date.now() / 1000),
+                action: JSON.stringify(action)
             }
         };
         this.mqtt.publish(payload);
