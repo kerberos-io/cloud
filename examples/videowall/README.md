@@ -4,8 +4,16 @@ This repository contains a comprehensive video wall implementation that brings t
 
 ## Features
 
-As explained above, this example brings together some of the other features demonstrated in this repository. Please follow the respective repositories in this repository:
+As explained above, this example integrates several advanced features showcased in other parts of this repository. Each feature is designed to enhance the overall functionality and user experience of the video wall. For more detailed information on how each feature works, please refer to the respective sections within this repository:
 
-1. [Standard-Definition Livestream](../livestream-sd)
-2. [High-Definition Livestream](../livestream-hd)
-3. [Pan-Tilt-Zoom (PTZ)](../onvif-ptz)
+- **Standard-Definition Livestream**: Provides a reliable and efficient way to stream video in standard definition, suitable for scenarios where bandwidth is limited or high-definition is not required. [Learn more](../livestream-sd)
+- **High-Definition Livestream**: Delivers high-quality video streaming, ensuring clear and detailed visuals for critical monitoring tasks. [Learn more](../livestream-hd)
+- **Pan-Tilt-Zoom (PTZ)**: Offers dynamic control over the camera's viewing angle and zoom level, enabling users to focus on specific areas of interest and obtain a more comprehensive view. [Learn more](../onvif-ptz)
+
+## Example
+
+In the `ui` folder a React application is created implementing the above feature, which contains a working example using our [`demo enviroment`](https://app-demo.kerberos.io). To run the project, install the dependencies and run the project using `npm install`.
+
+    cd ui/
+    npm install
+    npm start
