@@ -1,7 +1,6 @@
 # Examples
 
-Within this directory you will find a few examples of how you can integrate with Kerberos Hub.
-
+Within this directory, you will find several examples demonstrating how to integrate with Hub. Select one of the examples below to get started:
 
 1. [Live streaming SD (MQTT)](./livestream-sd)
 2. [Live streaming HD (WebRTC)](./livestream-hd)

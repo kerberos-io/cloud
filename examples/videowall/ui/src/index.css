@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+#root{
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
