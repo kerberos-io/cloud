@@ -35,6 +35,18 @@ class App extends React.Component {
     'camera9',
     'camera1',
     'camera1',
+    'camera7',
+    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',
+    'camera1',
+    'camera7',
+    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
 
     // ... and more
   ]
@@ -49,6 +61,7 @@ class App extends React.Component {
       pageHeight: window.innerHeight,
       pageWidth: window.innerWidth,
       agentCount: this.agents.length,
+      rectangles: [],
     };
   }
 
@@ -77,16 +90,66 @@ class App extends React.Component {
     }
     return { rows: bestR, cols: bestC };
   }
+  
+  splitInto43AspectRatios(totalWidth, totalHeight) {
+    const subRectangles = [];
+    let currentX = 0;
+    let currentY = 0;
+    let remainingWidth = totalWidth;
+    let remainingHeight = totalHeight;
+  
+    while (remainingWidth > 0 && remainingHeight > 0) {
+      if (remainingWidth / remainingHeight >= 4 / 3) {
+        // Split vertically (left portion)
+        const subWidth = (4 / 3) * remainingHeight;
+        subRectangles.push({
+          x: currentX,
+          y: currentY,
+          width: subWidth,
+          height: remainingHeight
+        });
+        
+        // Update remaining area (right portion)
+        currentX += subWidth;
+        remainingWidth -= subWidth;
+      } else {
+        // Split horizontally (top portion)
+        const subHeight = (3 / 4) * remainingWidth;
+        subRectangles.push({
+          x: currentX,
+          y: currentY,
+          width: remainingWidth,
+          height: subHeight
+        });
+        
+        // Update remaining area (bottom portion)
+        currentY += subHeight;
+        remainingHeight -= subHeight;
+        console.log(remainingHeight, remainingWidth);
+      }
+
+      if (remainingHeight < 1 || remainingWidth < 1) {
+        console.log("ERROR: Remaining height is less than 1");
+        break;
+      }
+    }
+  
+    return subRectangles;
+  }
+  
 
   updateDimensions = () => {
 
     const agentCount = this.agents.length;
     const rowsAndColumns = this.findBestGrid(agentCount);
+    const rectangles = this.splitInto43AspectRatios(window.innerHeight, window.innerWidth);
+    console.log(rectangles);
     this.setState({
       pageHeight: window.innerHeight,
       pageWidth: window.innerWidth,
       agentWidth: rowsAndColumns.cols,
       agentHeight: rowsAndColumns.rows,
+      rectangles: rectangles,
     });
   };
 
@@ -119,42 +182,22 @@ class App extends React.Component {
 
     const baseStyle = "flex justify-center items-centerd p-3 h-full";
     const selectedStyle = `${baseStyle} bg-gray-800 text-white`;
-    let { globalStreamMode, agentWidth, agentHeight } = this.state;
-    return <div id="page-root" class="flex-1 flex flex-col h-full">
-    <Main className="flex-1 flex flex-col h-full">
-      <Gradient />
-      <div className='flex justify-between items-center h-10 bg-black'>
-        {this.state.isConnecting && <div className='bg-orange-500 text-orange-50 p-2 w-fit'>Connecting to MQTT.</div>}
-        {this.state.error && <div className='bg-red-500 text-red-50 p-2 w-fit'>Error connecting to MQTT.</div>}
-        {this.state.connected && <div className='bg-green-500 text-green-50 p-2 w-fit'>Connected to MQTT!</div>}
+    let { globalStreamMode, agentWidth, agentHeight, rectangles } = this.state;
+    console.log(agentWidth, agentHeight);
 
-        <div className='flex justify-center items-center gap-2 h-full'>
-          <div className="flex items-center gap-2 text-white h-full shadow-md">
-            <span>All</span>
-            <div className="text-gray-800 bg-gray-400 bg-opacity-70 flex items-center overflow-hidden justify-center h-full text-xs z-50">
-                <button className={(globalStreamMode === STREAM_MODE_OPTIONS.JPEG) ? selectedStyle : baseStyle} onClick={() => this.changeGlobalStreamMode(STREAM_MODE_OPTIONS.JPEG)}>SD</button>
-                <button className={(globalStreamMode === STREAM_MODE_OPTIONS.WEBRTC) ? selectedStyle : baseStyle} onClick={() => this.changeGlobalStreamMode(STREAM_MODE_OPTIONS.WEBRTC)}>HD</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Wait for MQTT connection before rendering streams */}
-      <div className={`grid gap-0 bg-white pb-4 h-screen`} style={{ 
-        height: "100vh",
-        gridArea: "1 / 1 / 2 / 2",
+    return (<div className='w-full h-full relative'>
+      { rectangles.map((rectangle, index) => {
+        return <div key={index} style={{
+          position: 'absolute',
+          top: rectangle.y,
+          left: rectangle.x,
+          width: rectangle.width,
+          height: rectangle.height,
+          border: '1px solid black',
         }}>
-      { this.state.connected && this.agents.map((agent, index) => {
-        return <div className="relative group flex items-center justify-center bg-black text-white" key={agent + index}>
-                  <Stream name={agent} 
-                          mqtt={this.mqtt}
-                          globalStreamMode={globalStreamMode}/>
-                  <div className="absolute top-0 left-0 bg-black text-white p-2">{agent}</div>
-                </div>
+        </div>
       })}
-      </div>
-    </Main>
-  </div>;
+    </div>)
   }
 }
 

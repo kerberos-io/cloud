@@ -29,7 +29,7 @@ class Stream extends React.Component {
         const { name, mqtt, globalStreamMode } = this.props;
         const { streamMode } = this.state;
         return (
-            <div className="w-full h-full relative">
+            <div className="w-full h-200 relative">
                 <Overlay name={name} mqtt={mqtt} changeStream={this.changeStream} globalStreamMode={globalStreamMode}></Overlay>
                 {streamMode === STREAM_MODE_OPTIONS.JPEG && <JPEG name={name} mqtt={mqtt}></JPEG>} 
                 {streamMode === STREAM_MODE_OPTIONS.WEBRTC && <WebRTC name={name} mqtt={mqtt}></WebRTC>}

@@ -17,77 +17,11 @@ class Overlay extends React.Component {
         const { mqtt, name } = this.props;
         this.mqtt = mqtt;
         this.name = name;
-
-        // To start receiving messages, we need to send heartbeats to the topic: kerberos/agent/{hubKey}
-        // This will wakeup the desired agents, and they will start sending JPEGS to the kerberos/hub/{hubKey} topic.
-        this.publish();
-
-        // We need to subscribe to the specific camera to receive the liveview.
-        // After the request-sd-stream action is sent, the agent will start sending 
-        // JPEGS to the kerberos/hub/{hubKey} topic.
-        this.subscribe();
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.globalStreamMode !== this.props.globalStreamMode) {
             this.setState({ streamMode: this.props.globalStreamMode });
-        }
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.intervalId);
-    }
-
-    subscribe() {
-        // We're listening for the "receive-sd-stream" action for the specific
-        // camera (all other actions are ignored).
-        // Each time we receive a message with this action, we update the liveview state.
-        this.mqtt.on(this.name, (_, message) => {
-            const { payload } = message;
-            if (payload.action === "receive-sd-stream") {
-                const { value } = payload;
-                this.setState({
-                    liveview: value.image
-                });
-            }
-        });
-    }
-
-    publish() {
-        const payload = {
-            action: "request-sd-stream",
-            device_id: this.name,
-            value: {
-                timestamp: Math.floor(Date.now() / 1000),
-            }
-        };
-        this.mqtt.publish(payload);
-    }
-
-    zoom = (zoomDirection = ZOOM_OPTIONS.IN) => {
-        if (zoomDirection === ZOOM_OPTIONS.IN) {
-            console.log("Zoom In");
-        } else {
-            console.log("Zoom Out");
-        }
-    };
-
-    move = (direction = DIRECTIONS.UP) => {
-        switch (direction) {
-            case DIRECTIONS.UP:
-                console.log("Move Up");
-                break;
-            case DIRECTIONS.DOWN:
-                console.log("Move Down");
-                break;
-            case DIRECTIONS.LEFT:
-                console.log("Move Left");
-                break;
-            case DIRECTIONS.RIGHT:
-                console.log("Move Right");
-                break;
-            default:
-                break;
         }
     }
 
