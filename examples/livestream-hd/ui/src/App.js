@@ -38,6 +38,14 @@ class App extends React.Component {
     // ... and more
   ]
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      isConnecting: true,
+      connected: false,
+    };
+  }
+
 
   componentDidMount(){
     this.mqtt = new MQTT({
@@ -54,27 +62,18 @@ class App extends React.Component {
         connected: connected
       });
     });
-
-    // Get initial dimensions
-    this.updateDimensions();
-
-    // Add event listener for window resize
-    window.addEventListener('resize', this.updateDimensions);
   }
 
   render() {
     return <div id="page-root" class="flex-1 flex flex-col h-full">
     <Main className="flex-1 flex flex-col h-full">
       {/* Wait for MQTT connection before rendering streams */}
-      <div className={`grid gap-0 bg-white pb-4 h-full overflow-hidden`} style={{ 
-        gridTemplateColumns: `repeat(auto-fill, minmax(${agentHeight}px, 1fr))` ,
-        gridTemplateRows: `repeat(auto-fill, minmax(${agentWidth}px, 1fr))` ,
-        }}>
+      {/* grid with 3 columns and 3 rows */}
+      <div className={`grid gap-0 bg-white pb-4 h-full overflow-hidden grid-cols-3 grid-rows-3`}>
       { this.state.connected && this.agents.map((agent, index) => {
         return <div className="relative group flex items-center justify-center bg-black text-white" key={agent + index}>
                   <Stream name={agent} 
-                          mqtt={this.mqtt}
-                          globalStreamMode={globalStreamMode}/>
+                          mqtt={this.mqtt}/>
                   <div className="absolute top-0 left-0 bg-black text-white p-2">{agent}</div>
                 </div>
       })}
