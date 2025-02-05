@@ -60,6 +60,7 @@ class PTZ extends React.Component {
         switch (direction) {
             case DIRECTIONS.UP:
                 action.payload.up = 1;
+                this.publish(action);
                 break;
             case DIRECTIONS.DOWN:
                 action.payload.down = 1;

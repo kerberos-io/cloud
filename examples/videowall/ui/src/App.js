@@ -25,6 +25,7 @@ class App extends React.Component {
   // List of agents (cameras) to display, we'll use the Agent id
   // to get the stream of the desired cameras.
   agents = [
+    'camera1',
     'camera2',
     'camera3',
     'camera4',
@@ -33,9 +34,6 @@ class App extends React.Component {
     'camera7',
     'camera8',
     'camera9',
-    'camera1',
-    'camera1',
-
     // ... and more
   ]
 
