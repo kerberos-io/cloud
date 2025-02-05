@@ -2,3 +2,4 @@ node_modules
 .yarn
 yarn.lock
 env.js
+.DS_Store

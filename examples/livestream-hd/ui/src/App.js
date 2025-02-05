@@ -47,6 +47,50 @@ class App extends React.Component {
     'camera9',
     'camera1',
     'camera1',
+    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+    'camera1',
+    'camera1',    'camera8',
+    'camera9',
+    'camera1',
+
 
     // ... and more
   ]
@@ -91,58 +135,42 @@ class App extends React.Component {
     return { rows: bestR, cols: bestC };
   }
   
-  splitInto43AspectRatios(totalWidth, totalHeight) {
-    const subRectangles = [];
-    let currentX = 0;
-    let currentY = 0;
-    let remainingWidth = totalWidth;
-    let remainingHeight = totalHeight;
-  
-    while (remainingWidth > 0 && remainingHeight > 0) {
-      if (remainingWidth / remainingHeight >= 4 / 3) {
-        // Split vertically (left portion)
-        const subWidth = (4 / 3) * remainingHeight;
-        subRectangles.push({
-          x: currentX,
-          y: currentY,
-          width: subWidth,
-          height: remainingHeight
-        });
-        
-        // Update remaining area (right portion)
-        currentX += subWidth;
-        remainingWidth -= subWidth;
-      } else {
-        // Split horizontally (top portion)
-        const subHeight = (3 / 4) * remainingWidth;
-        subRectangles.push({
-          x: currentX,
-          y: currentY,
-          width: remainingWidth,
-          height: subHeight
-        });
-        
-        // Update remaining area (bottom portion)
-        currentY += subHeight;
-        remainingHeight -= subHeight;
-        console.log(remainingHeight, remainingWidth);
-      }
-
-      if (remainingHeight < 1 || remainingWidth < 1) {
-        console.log("ERROR: Remaining height is less than 1");
-        break;
+  getOptimalLayout(pageHeight, pageWidth, amount) {
+    let best = { width: 0, cols: 1, rows: amount };
+    
+    for (let cols = 1; cols <= amount; cols++) {
+      const rows = Math.ceil(amount / cols);
+      const candidateWidth = Math.floor(pageWidth / cols);
+      if (candidateWidth < 150) continue;
+      const candidateHeight = candidateWidth * 0.75;
+      if (rows * candidateHeight <= pageHeight && candidateWidth > best.width) {
+        best = { width: candidateWidth, cols, rows };
       }
     }
   
+    const height = best.width * 0.75;
+    const subRectangles = [];
+    let count = 0;
+    for (let r = 0; r < best.rows && count < amount; r++) {
+      for (let c = 0; c < best.cols && count < amount; c++) {
+        subRectangles.push({
+          x: c * best.width,
+          y: r * height,
+          width: best.width,
+          height
+        });
+        count++;
+      }
+    }
     return subRectangles;
   }
-  
 
   updateDimensions = () => {
 
     const agentCount = this.agents.length;
     const rowsAndColumns = this.findBestGrid(agentCount);
-    const rectangles = this.splitInto43AspectRatios(window.innerHeight, window.innerWidth);
+    console.log('grdrrdgdr', window.innerHeight, window.innerWidth);
+    const rectangles = this.getOptimalLayout(window.innerHeight, window.innerWidth, agentCount);
     console.log(rectangles);
     this.setState({
       pageHeight: window.innerHeight,
