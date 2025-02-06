@@ -29,15 +29,16 @@ class WebRTC extends React.Component {
         this.peerConnection.onicegatheringstatechange = this.handleICEGatheringStateChangeEvent.bind(this);
         this.peerConnection.onconnectionstatechange = this.handleConnectionStateChangeEvent.bind(this);
 
+        // We need to subscribe to the specific agent to receive the ICECandidate.
+        // Upon receiving the ICECandidate, we'll add it to the peerConnection.
+        this.subscribe();
+
         this.peerConnection.addTransceiver("video", {
           direction: "sendrecv",
         });
         this.peerConnection.addTransceiver("audio", {
           direction: "sendrecv",
         });
-        // We need to subscribe to the specific agent to receive the ICECandidate.
-        // Upon receiving the ICECandidate, we'll add it to the peerConnection.
-        this.subscribe();
     }
 
     subscribe() {
@@ -124,16 +125,63 @@ class WebRTC extends React.Component {
         }
     }
 
-    handleICEConnectionStateChangeEvent() {
-        // Handle ICE connection state change event
-    }
-
     handleSignalingStateChangeEvent() {
         // Handle signaling state change event
     }
 
+
+    handleICEConnectionStateChangeEvent() {
+        // Handle ICE connection state change event
+        // If the connection is disconnected, we'll close the peer connection, and try to reconnect.
+        if (this.peerConnection.iceConnectionState === 'disconnected') {
+            this.peerConnection.close();
+            this.peerConnection = new RTCPeerConnection({
+                iceServers: [
+                    { urls: window.env.STUN_URI },
+                    { urls: window.env.TURN_URI, username: window.env.WEBRTC_USERNAME, credential: window.env.WEBRTC_PASSWORD }
+                ]
+            });
+            this.peerConnection.onicecandidate = this.handleICECandidateEvent.bind(this);
+            this.peerConnection.ontrack = this.handleTrackEvent.bind(this);
+            this.peerConnection.onnegotiationneeded = this.handleNegotiationNeededEvent.bind(this);
+            this.peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent.bind(this);
+            this.peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent.bind(this);
+            this.peerConnection.onicegatheringstatechange = this.handleICEGatheringStateChangeEvent.bind(this);
+            this.peerConnection.onconnectionstatechange = this.handleConnectionStateChangeEvent.bind(this);
+            this.peerConnection.addTransceiver("video", {
+              direction: "sendrecv",
+            });
+            this.peerConnection.addTransceiver("audio", {
+              direction: "sendrecv",
+            });
+        }
+    }
+
     handleICEGatheringStateChangeEvent() {
-        // Handle ICE gathering state change event
+        // ICE gathering state change event
+        // If failed, we'll close the peer connection, and try to reconnect.
+        if (this.peerConnection.iceGatheringState === 'failed') {
+            this.peerConnection.close();
+            this.peerConnection = new RTCPeerConnection({
+                iceServers: [
+                    { urls: window.env.STUN_URI },
+                    { urls: window.env.TURN_URI, username: window.env.WEBRTC_USERNAME, credential: window.env.WEBRTC_PASSWORD }
+                ]
+            });
+            this.peerConnection.onicecandidate = this.handleICECandidateEvent.bind(this);
+            this.peerConnection.ontrack = this.handleTrackEvent.bind(this);
+            this.peerConnection.onnegotiationneeded = this.handleNegotiationNeededEvent.bind(this);
+            this.peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent.bind(this);
+            this.peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent.bind(this);
+            this.peerConnection.onicegatheringstatechange = this.handleICEGatheringStateChangeEvent.bind(this);
+            this.peerConnection.onconnectionstatechange = this.handleConnectionStateChangeEvent.bind(this);
+            this.peerConnection.addTransceiver("video", {
+              direction: "sendrecv",
+            });
+            this.peerConnection.addTransceiver("audio", {
+              direction: "sendrecv",
+            });
+        }
     }
 
     render(){

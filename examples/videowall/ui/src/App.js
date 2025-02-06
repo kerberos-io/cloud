@@ -1,3 +1,4 @@
+import adapter from 'webrtc-adapter';
 import React from 'react';
 import './App.css';
 import MQTT from './components/MQTT';
